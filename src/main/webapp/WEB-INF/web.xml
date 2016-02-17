@@ -9,7 +9,7 @@
   </context-param>
   <context-param>
     <param-name>webAppRootKey</param-name>
-    <param-value>pricetaginfo.root</param-value>
+    <param-value>ReportAnalysis.root</param-value>
   </context-param>
   <!-- cors domain -->
   <filter>
