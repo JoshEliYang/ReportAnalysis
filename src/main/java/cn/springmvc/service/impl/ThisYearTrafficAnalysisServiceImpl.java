@@ -1,12 +1,14 @@
 package cn.springmvc.service.impl;
 
 import java.util.List;
+import java.util.concurrent.ExecutorService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.alibaba.fastjson.JSON;
-import com.springmvc.utils.redisUtil;
+import com.springmvc.utils.RedisUtil;
+import com.springmvc.utils.ThreadPoolUtil;
 
 import cn.springmvc.ReportDAO.ThisYearTrafficAnalysisDAO;
 import cn.springmvc.model.ThisYearTrafficAnalysis;
@@ -25,7 +27,7 @@ public class ThisYearTrafficAnalysisServiceImpl implements ThisYearTrafficAnalys
 		/**
 		 * 先从redis中找
 		 */
-		redisUtil redis = redisUtil.getRedis();
+		RedisUtil redis = RedisUtil.getRedis();
 		String res = redis.getdat("ThisYearAllTrafficAnalysis");
 		List<ThisYearTrafficAnalysis> resList=null;
 		if(res!=null){
@@ -34,7 +36,12 @@ public class ThisYearTrafficAnalysisServiceImpl implements ThisYearTrafficAnalys
 			
 			//redis和DB同步
 			redisSync.setId("ThisYearAllTrafficAnalysis");
-			new Thread(redisSync).start();
+//			new Thread(redisSync).start();
+			Thread redisThread=new Thread(redisSync);
+			ExecutorService redisPool=ThreadPoolUtil.getPool("redisPool");
+			redisPool.execute(redisThread);
+//			ExecutorService redisPool = Executors.newCachedThreadPool();
+//			redisPool.execute(redisThread);
 			
 			return resList;
 		}

@@ -1,12 +1,14 @@
 package cn.springmvc.service.impl;
 
 import java.util.List;
+import java.util.concurrent.ExecutorService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.alibaba.fastjson.JSON;
-import com.springmvc.utils.redisUtil;
+import com.springmvc.utils.RedisUtil;
+import com.springmvc.utils.ThreadPoolUtil;
 
 import cn.springmvc.ReportDAO.LastYearTrafficAnalysisDAO;
 import cn.springmvc.model.LastYearTrafficAnalysis;
@@ -25,16 +27,21 @@ public class LastYearTrafficAnalysisServiceImpl implements LastYearTrafficAnalys
 		/**
 		 * 先从redis中找
 		 */
-		redisUtil redis = redisUtil.getRedis();
+		RedisUtil redis = RedisUtil.getRedis();
 		String res = redis.getdat("AllTrafficAnalysisData");
 		List<LastYearTrafficAnalysis> resList=null;
 		if (res != null) {
 			//从redis中取数据
 			resList = JSON.parseArray(res, LastYearTrafficAnalysis.class);
 			
-			//redis和DB同步
+			//redis和DB同步--新线程
 			redisSync.setId("AllTrafficAnalysisData");
-			new Thread(redisSync).start();
+//			new Thread(redisSync).start();
+			Thread redisThread=new Thread(redisSync);
+			ExecutorService redisPool=ThreadPoolUtil.getPool("redisPool");
+			redisPool.execute(redisThread);
+//			ExecutorService redisPool = Executors.newCachedThreadPool();
+//			redisPool.execute(redisThread);
 			
 			return resList;
 		}

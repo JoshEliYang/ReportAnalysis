@@ -9,15 +9,15 @@ import redis.clients.jedis.JedisPoolConfig;
  * @author johsnon
  *
  */
-public class redisUtil {
-	private static redisUtil redis = new redisUtil();
+public class RedisUtil {
+	private static RedisUtil redis = new RedisUtil();
 
-	private redisUtil() {
+	private RedisUtil() {
 		super();
 		setup();
 	}
 
-	public static redisUtil getRedis() {
+	public static RedisUtil getRedis() {
 		return redis;
 	}
 	
@@ -38,17 +38,19 @@ public class redisUtil {
         config.setTestOnBorrow(true);  
         
 		pool = new JedisPool(config,"127.0.0.1",6379);
-		//pool = new JedisPool(new JedisPoolConfig(), serverIP,6379);
 		jedis = pool.getResource();
 	}
 	
 	
 	public void setdat(String key,String value){
 		jedis.set(key, value);
+		jedis.expire(key, 24*3600);
 	}
 	
 	public String getdat(String key){
-		return jedis.get(key);
+		String res=jedis.get(key);
+		jedis.expire(key, 24*3600);
+		return res;
 	}
 	
 	
