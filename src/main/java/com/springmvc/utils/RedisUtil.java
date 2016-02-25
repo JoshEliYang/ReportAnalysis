@@ -5,12 +5,15 @@ import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 
 /**
- * 
+ * 单例：静态内部类
  * @author johsnon
  *
  */
 public class RedisUtil {
-	private static RedisUtil redis = new RedisUtil();
+	
+	private static class RedisUtilHolder{
+		private static final RedisUtil redis=new RedisUtil();
+	}
 
 	private RedisUtil() {
 		super();
@@ -18,7 +21,7 @@ public class RedisUtil {
 	}
 
 	public static RedisUtil getRedis() {
-		return redis;
+		return RedisUtilHolder.redis;
 	}
 	
 	private JedisPool pool;
@@ -53,6 +56,11 @@ public class RedisUtil {
 		return res;
 	}
 	
-	
+	//释放jedis资源
+	public void destroy(){
+		if(jedis!=null){
+			pool.returnResource(jedis);
+		}
+	}
 	
 }
