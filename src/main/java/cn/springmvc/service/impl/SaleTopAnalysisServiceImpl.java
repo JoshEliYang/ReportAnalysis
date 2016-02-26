@@ -44,6 +44,7 @@ public class SaleTopAnalysisServiceImpl implements SaleTopAnalysisService {
 //			ExecutorService redisPool = Executors.newCachedThreadPool();
 //			redisPool.execute(redisThread);
 			
+			redis.destroy();
 			return resList;
 		}
 		
@@ -53,6 +54,8 @@ public class SaleTopAnalysisServiceImpl implements SaleTopAnalysisService {
 		resList=saleTopAnalysisdao.selectAllSaleTopData();
 		String outStr=JSON.toJSONString(resList);
 		redis.setdat("AllSaleTopData", outStr);
+		
+		redis.destroy();
 		return resList;
 	}
 

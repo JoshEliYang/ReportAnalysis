@@ -44,6 +44,7 @@ public class SalesDataServiceImpl implements SalesDataService {
 //			ExecutorService redisPool = Executors.newCachedThreadPool();
 //			redisPool.execute(redisThread);
 			
+			redis.destroy();
 			return resList;
 		}
 		
@@ -53,6 +54,8 @@ public class SalesDataServiceImpl implements SalesDataService {
 		resList=dao.selectAllSalesData();
 		String outStr=JSON.toJSONString(resList);
 		redis.setdat("AllSalesData", outStr);
+		
+		redis.destroy();
 		return resList;
 	}
 

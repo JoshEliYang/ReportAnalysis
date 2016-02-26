@@ -11,17 +11,13 @@ import redis.clients.jedis.JedisPoolConfig;
  */
 public class RedisUtil {
 	
-	private static class RedisUtilHolder{
-		private static final RedisUtil redis=new RedisUtil();
-	}
-
 	private RedisUtil() {
 		super();
 		setup();
 	}
 
 	public static RedisUtil getRedis() {
-		return RedisUtilHolder.redis;
+		return new RedisUtil();
 	}
 	
 	private JedisPool pool;

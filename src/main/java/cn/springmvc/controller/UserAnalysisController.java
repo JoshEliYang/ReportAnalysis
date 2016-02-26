@@ -30,6 +30,7 @@ public class UserAnalysisController {
 	
 	/**
 	 * 获得用户分析报表--有消费记录
+	 * 请求全部数据--比较慢，不使用
 	 * @return
 	 */
 	@ResponseBody
@@ -66,6 +67,7 @@ public class UserAnalysisController {
 	
 	/**
 	 * 获得用户分析报表--无消费记录
+	 * 请求全部数据--非常慢，不使用
 	 * @return
 	 */
 	@ResponseBody

@@ -43,6 +43,7 @@ public class LastYearTrafficAnalysisServiceImpl implements LastYearTrafficAnalys
 //			ExecutorService redisPool = Executors.newCachedThreadPool();
 //			redisPool.execute(redisThread);
 			
+			redis.destroy();
 			return resList;
 		}
 
@@ -52,6 +53,8 @@ public class LastYearTrafficAnalysisServiceImpl implements LastYearTrafficAnalys
 		resList=trafficAnalysisDao.selectAllTrafficAnalysis();
 		String outStr=JSON.toJSONString(resList);
 		redis.setdat("AllTrafficAnalysisData", outStr);
+		
+		redis.destroy();
 		return resList;
 	}
 
