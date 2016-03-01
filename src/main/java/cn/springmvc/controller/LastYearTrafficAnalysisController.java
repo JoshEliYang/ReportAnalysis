@@ -15,6 +15,7 @@ import com.springmvc.utils.HttpUtils;
 import cn.springmvc.model.LastYearTrafficAnalysis;
 import cn.springmvc.service.impl.LastYearTrafficAnalysisServiceImpl;
 
+@Scope("prototype")
 @Controller
 @RequestMapping("/last_year_traffic")
 public class LastYearTrafficAnalysisController {

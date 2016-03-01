@@ -7,6 +7,7 @@ package cn.springmvc.model;
  */
 public class UserAnalysis {
 	String regist_time;
+	String CUSTOMER_TOKEN;
 	String nick_name;
 	String real_name;
 	String gender;
@@ -28,6 +29,14 @@ public class UserAnalysis {
 
 	public void setRegist_time(String regist_time) {
 		this.regist_time = regist_time;
+	}
+
+	public String getCUSTOMER_TOKEN() {
+		return CUSTOMER_TOKEN;
+	}
+
+	public void setCUSTOMER_TOKEN(String cUSTOMER_TOKEN) {
+		CUSTOMER_TOKEN = cUSTOMER_TOKEN;
 	}
 
 	public String getNick_name() {

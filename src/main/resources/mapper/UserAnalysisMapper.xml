@@ -7,6 +7,7 @@
 				<select id="getUerAnalysisWithExpenseRecord" resultType="UserAnalysis">
 					select 
 						regist_time,
+						CUSTOMER_TOKEN,
 						nick_name,
 						real_name,
 						gender,
@@ -28,6 +29,7 @@
 				<select id="getUserAnalysisWithExpenseRecordPage" resultType="UserAnalysis">
 					select 
 						regist_time,
+						CUSTOMER_TOKEN,
 						nick_name,
 						real_name,
 						gender,
@@ -50,6 +52,7 @@
 				<select id="getUserAnalysisNoExpenseRecord" resultType="UserAnalysis">
 					select 
 						regist_time,
+						CUSTOMER_TOKEN,
 						nick_name,
 						real_name,
 						gender,
@@ -68,6 +71,7 @@
 				<select id="getUserAnalysisNoExpenseRecordPage" resultType="UserAnalysis">
 					select 
 						regist_time,
+						CUSTOMER_TOKEN,
 						nick_name,
 						real_name,
 						gender,

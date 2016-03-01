@@ -1,19 +1,16 @@
 package cn.springmvc.service.impl;
 
 import java.util.List;
-import java.util.concurrent.ExecutorService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.alibaba.fastjson.JSON;
 import com.springmvc.utils.RedisUtil;
-import com.springmvc.utils.ThreadPoolUtil;
 
 import cn.springmvc.ReportDAO.UserAnalysisDao;
 import cn.springmvc.model.UserAnalysis;
 import cn.springmvc.service.UserAnalysisService;
-import cn.springmvc.service.redisSyncService;
 
 /**
  * 
@@ -24,14 +21,27 @@ import cn.springmvc.service.redisSyncService;
 public class UserAnalysisServiceImpl implements UserAnalysisService {
 	@Autowired
 	public UserAnalysisDao userDao;
-	@Autowired
-	public redisSyncService redisSync;
 
 	/**
 	 * 获得用户分析报表--有消费记录 获取全部数据--不使用
 	 */
 	public List<UserAnalysis> getUserAnalysisWithExpenseRecord() {
-		return userDao.getUerAnalysisWithExpenseRecord();
+		String Key = "UerAnalysisWithExpenseRecord";
+		RedisUtil redis = RedisUtil.getRedis();
+		String res = redis.getdat(Key);
+		List<UserAnalysis> resList = null;
+		if (res != null) {
+			resList = JSON.parseArray(res, UserAnalysis.class);
+
+			redis.destroy();
+			return resList;
+		}
+		resList = userDao.getUerAnalysisWithExpenseRecord();
+		String outStr = JSON.toJSONString(resList);
+		redis.setdat(Key, outStr);
+
+		redis.destroy();
+		return resList;
 	}
 
 	/**
@@ -48,17 +58,17 @@ public class UserAnalysisServiceImpl implements UserAnalysisService {
 		if (res != null) {
 			// 从redis中取数据
 			resList = JSON.parseArray(res, UserAnalysis.class);
-			
-			//redis和DB同步--新线程
-			int[] parameterInt=new int[2];
-			parameterInt[0]=st;
-			parameterInt[1]=ed;
-			redisSync.setId("UserValid");
-			redisSync.setParameter(Key);
-			redisSync.setParameterInt(parameterInt);
-			Thread redisThread=new Thread(redisSync);
-			ExecutorService redisPool=ThreadPoolUtil.getPool("redisPool");
-			redisPool.execute(redisThread);
+
+			// //redis和DB同步--新线程
+			// int[] parameterInt=new int[2];
+			// parameterInt[0]=st;
+			// parameterInt[1]=ed;
+			// redisSync.setId("UserValid");
+			// redisSync.setParameter(Key);
+			// redisSync.setParameterInt(parameterInt);
+			// Thread redisThread=new Thread(redisSync);
+			// ExecutorService redisPool=ThreadPoolUtil.getPool("redisPool");
+			// redisPool.execute(redisThread);
 
 			redis.destroy();
 			return resList;
@@ -76,7 +86,24 @@ public class UserAnalysisServiceImpl implements UserAnalysisService {
 	 * 获得用户分析报表--无消费记录 获取全部数据--不使用
 	 */
 	public List<UserAnalysis> getUserAnalysisNoExpenseRecord() {
-		return userDao.getUserAnalysisNoExpenseRecord();
+		String Key = "UserAnalysisNoExpenseRecord";
+
+		RedisUtil redis = RedisUtil.getRedis();
+		String res = redis.getdat(Key);
+		List<UserAnalysis> resList = null;
+		if (res != null) {
+			resList = JSON.parseArray(res, UserAnalysis.class);
+
+			redis.destroy();
+			return resList;
+		}
+
+		resList = userDao.getUserAnalysisNoExpenseRecord();
+		String outStr = JSON.toJSONString(resList);
+		redis.setdat(Key, outStr);
+
+		redis.destroy();
+		return resList;
 	}
 
 	/**
@@ -94,17 +121,17 @@ public class UserAnalysisServiceImpl implements UserAnalysisService {
 			// 从redis中取数据
 			resList = JSON.parseArray(res, UserAnalysis.class);
 
-			//redis和DB同步--新线程
-			int[] parameterInt=new int[2];
-			parameterInt[0]=st;
-			parameterInt[1]=ed;
-			redisSync.setId("UserInvalid");
-			redisSync.setParameter(Key);
-			redisSync.setParameterInt(parameterInt);
-			Thread redisThread=new Thread(redisSync);
-			ExecutorService redisPool=ThreadPoolUtil.getPool("redisPool");
-			redisPool.execute(redisThread);
-			
+			// redis和DB同步--新线程
+			// int[] parameterInt=new int[2];
+			// parameterInt[0]=st;
+			// parameterInt[1]=ed;
+			// redisSync.setId("UserInvalid");
+			// redisSync.setParameter(Key);
+			// redisSync.setParameterInt(parameterInt);
+			// Thread redisThread=new Thread(redisSync);
+			// ExecutorService redisPool=ThreadPoolUtil.getPool("redisPool");
+			// redisPool.execute(redisThread);
+
 			redis.destroy();
 			return resList;
 		}
@@ -129,13 +156,13 @@ public class UserAnalysisServiceImpl implements UserAnalysisService {
 		if (res != null) {
 			// 从redis中取数据
 			resDat = Integer.parseInt(res);
-			
-			//redis和DB同步--新线程
-			redisSync.setId(Key);
-			redisSync.setParameter(Key);
-			Thread redisThread=new Thread(redisSync);
-			ExecutorService redisPool=ThreadPoolUtil.getPool("redisPool");
-			redisPool.execute(redisThread);
+
+			// //redis和DB同步--新线程
+			// redisSync.setId(Key);
+			// redisSync.setParameter(Key);
+			// Thread redisThread=new Thread(redisSync);
+			// ExecutorService redisPool=ThreadPoolUtil.getPool("redisPool");
+			// redisPool.execute(redisThread);
 
 			redis.destroy();
 			return resDat;
@@ -160,13 +187,13 @@ public class UserAnalysisServiceImpl implements UserAnalysisService {
 		if (res != null) {
 			// 从redis中取数据
 			resDat = Integer.parseInt(res);
-			
-			//redis和DB同步--新线程
-			redisSync.setId(Key);
-			redisSync.setParameter(Key);
-			Thread redisThread=new Thread(redisSync);
-			ExecutorService redisPool=ThreadPoolUtil.getPool("redisPool");
-			redisPool.execute(redisThread);
+
+			// redis和DB同步--新线程
+			// redisSync.setId(Key);
+			// redisSync.setParameter(Key);
+			// Thread redisThread=new Thread(redisSync);
+			// ExecutorService redisPool=ThreadPoolUtil.getPool("redisPool");
+			// redisPool.execute(redisThread);
 
 			redis.destroy();
 			return resDat;
