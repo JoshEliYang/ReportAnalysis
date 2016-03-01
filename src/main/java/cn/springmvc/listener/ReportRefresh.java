@@ -35,14 +35,16 @@ public class ReportRefresh extends TimerTask {
 
 	@Override
 	public void run() {
-		// 15年流量分析
-		LastYearTrafficAnalysis();
-		// 日常经营分析
+		// 日常经营分析 --2016
+		DailySales2016();
+		// 日常经营分析--2015
 		DailySales();
-		// 销售TOP分析15年
-		SaleTopAnalysis();
 		// 16年流量分析
 		ThisYearTrafficAnalysis();
+		// 15年流量分析
+		LastYearTrafficAnalysis();
+		// 销售TOP分析15年
+		SaleTopAnalysis();
 
 		/**
 		 * 获得有效用户
@@ -90,6 +92,19 @@ public class ReportRefresh extends TimerTask {
 		String outStr = JSON.toJSONString(resList);
 		RedisUtil redis = RedisUtil.getRedis();
 		redis.setdat("AllSalesData", outStr);
+		redis.destroy();
+	}
+	
+	/**
+	 * 刷新所有销售数据 2016
+	 */
+	void DailySales2016() {
+		// 获得bean
+		DailySalesDAO dao = context.getBean(DailySalesDAO.class);
+		List<DailySalesAnalysis> resList = dao.selectAllSalesData2016();
+		String outStr = JSON.toJSONString(resList);
+		RedisUtil redis = RedisUtil.getRedis();
+		redis.setdat("AllSalesData2016", outStr);
 		redis.destroy();
 	}
 

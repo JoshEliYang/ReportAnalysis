@@ -41,4 +41,17 @@ public class SalesDataController {
 			return HttpUtils.generateResponse("-1", "查询失败", null);
 		}
 	}
+	
+	@ResponseBody
+	@RequestMapping(value="/2016",method = RequestMethod.GET)
+	public Map<String, Object> getAllSalesData2016() {
+		List<DailySalesAnalysis> list = null;
+		try {
+			list = salesDataService.selectAllSalesData2016();
+			return HttpUtils.generateResponse("0", "请求成功", list);
+
+		} catch (Exception e) {
+			return HttpUtils.generateResponse("-1", "查询失败", null);
+		}
+	}
 }

@@ -44,4 +44,31 @@ public class SalesDataServiceImpl implements SalesDataService {
 		return resList;
 	}
 
+	// 所有日常销售数据--16年
+	public List<DailySalesAnalysis> selectAllSalesData2016() throws Exception {
+		/**
+		 * 先从redis中找
+		 */
+		RedisUtil redis = RedisUtil.getRedis();
+		String res = redis.getdat("AllSalesData2016");
+		List<DailySalesAnalysis> resList = null;
+		if (res != null) {
+			// 从redis中取数据
+			resList = JSON.parseArray(res, DailySalesAnalysis.class);
+
+			redis.destroy();
+			return resList;
+		}
+
+		/**
+		 * redis找不到
+		 */
+		resList = dao.selectAllSalesData2016();
+		String outStr = JSON.toJSONString(resList);
+		redis.setdat("AllSalesData2016", outStr);
+
+		redis.destroy();
+		return resList;
+	}
+
 }
