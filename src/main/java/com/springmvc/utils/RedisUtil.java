@@ -51,7 +51,7 @@ public class RedisUtil {
 	public void setdat(String key, String value) {
 		try {
 			jedis.set(key, value);
-			jedis.expire(key, 24 * 3600);
+			jedis.expire(key, 6 * 3600);
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
@@ -60,7 +60,7 @@ public class RedisUtil {
 	public String getdat(String key) {
 		try {
 			String res = jedis.get(key);
-			jedis.expire(key, 24 * 3600);
+			jedis.expire(key, 6 * 3600);
 			return res;
 		} catch (Exception ex) {
 			ex.printStackTrace();

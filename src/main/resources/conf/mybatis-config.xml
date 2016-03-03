@@ -10,6 +10,7 @@ PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
     	 <typeAlias alias="ThisYearTrafficAnalysis" type="cn.springmvc.model.ThisYearTrafficAnalysis"/>
     	 <typeAlias alias="SaleTopAnalysis" type="cn.springmvc.model.SaleTopAnalysis"/>
     	 <typeAlias alias="UserAnalysis" type="cn.springmvc.model.UserAnalysis"/>
+    	 <typeAlias alias="Order" type="cn.springmvc.model.Order"/>
     </typeAliases>
 
     <!-- 映射map -->

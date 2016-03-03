@@ -77,7 +77,7 @@ public class UserAnalysisController {
 		List<UserAnalysis> userReport=null;
 		try{
 			userReport=userService.getUserAnalysisNoExpenseRecord();
-			return HttpUtils.generateResponse("0`", "请求成功", userReport);
+			return HttpUtils.generateResponse("0", "请求成功", userReport);
 		}catch(Exception e){
 			e.printStackTrace();
 			return HttpUtils.generateResponse("1", "请求失败",	null);
@@ -96,7 +96,7 @@ public class UserAnalysisController {
 		List<UserAnalysis> userReport=null;
 		try{
 			userReport=userService.getUserAnalysisNoExpenseRecord(st, ed);
-			return HttpUtils.generateResponse("0`", "请求成功", userReport);
+			return HttpUtils.generateResponse("0", "请求成功", userReport);
 		}catch(Exception e){
 			e.printStackTrace();
 			return HttpUtils.generateResponse("1", "请求失败",	null);

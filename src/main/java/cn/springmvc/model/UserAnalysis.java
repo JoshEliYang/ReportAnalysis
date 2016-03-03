@@ -6,6 +6,7 @@ package cn.springmvc.model;
  *
  */
 public class UserAnalysis {
+	String CUSTOMER_ID;
 	String regist_time;
 	String CUSTOMER_TOKEN;
 	String nick_name;
@@ -22,6 +23,14 @@ public class UserAnalysis {
 	String city;
 	String county;
 	String address;
+
+	public String getCUSTOMER_ID() {
+		return CUSTOMER_ID;
+	}
+
+	public void setCUSTOMER_ID(String cUSTOMER_ID) {
+		CUSTOMER_ID = cUSTOMER_ID;
+	}
 
 	public String getRegist_time() {
 		return regist_time;
