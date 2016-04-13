@@ -35,13 +35,13 @@ public class ThisYearTrafficAnalysisController {
 	@RequestMapping(method = RequestMethod.GET)
 	public Map<String, Object> selectAllTrafficData() {
 		List<ThisYearTrafficAnalysis> list = null;
-		try {
-			list = thisYearTrafficAnalysisService.selectAllTrafficAnalysisData();
+		list = thisYearTrafficAnalysisService.selectAllTrafficAnalysisData();
+
+		if (list != null) {
 			return HttpUtils.generateResponse("0", "查询成功", list);
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error("selectAllTrafficData contorller error >>> " + e.getMessage());
-			return HttpUtils.generateResponse("1", "请求失败", null);
 		}
+
+		logger.error("selectAllTrafficData contorller error >>> ");
+		return HttpUtils.generateResponse("1", "请求失败", null);
 	}
 }

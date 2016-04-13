@@ -16,6 +16,11 @@ import com.springmvc.utils.HttpUtils;
 import cn.springmvc.model.LastYearTrafficAnalysis;
 import cn.springmvc.service.impl.LastYearTrafficAnalysisServiceImpl;
 
+/**
+ * 
+ * @author johsnon
+ *
+ */
 @Scope("prototype")
 @Controller
 @RequestMapping("/last_year_traffic")
@@ -36,13 +41,13 @@ public class LastYearTrafficAnalysisController {
 	@RequestMapping(method = RequestMethod.GET)
 	public Map<String, Object> selectAllTrafficData() {
 		List<LastYearTrafficAnalysis> list = null;
-		try {
-			list = trafficAnalysisService.selectAllTrafficAnalysisData();
+		list = trafficAnalysisService.selectAllTrafficAnalysisData();
+
+		if (list != null) {
 			return HttpUtils.generateResponse("0", "请求成功", list);
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error("selectAllTrafficData controller error >>> " + e.getMessage());
-			return HttpUtils.generateResponse("-1", "查询失败", null);
 		}
+
+		logger.error("selectAllTrafficData controller error >>> ");
+		return HttpUtils.generateResponse("-1", "查询失败", null);
 	}
 }

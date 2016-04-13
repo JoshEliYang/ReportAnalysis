@@ -1,5 +1,6 @@
 package cn.springmvc.service.impl;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -13,80 +14,124 @@ import cn.springmvc.ReportDAO.DailySalesDAO;
 import cn.springmvc.model.DailySalesAnalysis;
 import cn.springmvc.service.SalesDataService;
 
+/**
+ * 
+ * @author johsnon
+ *
+ */
 @Service
 public class SalesDataServiceImpl implements SalesDataService {
 
 	@Autowired
 	public DailySalesDAO dao;
-	
-	Logger logger=Logger.getLogger(SalesDataServiceImpl.class);
 
-	public List<DailySalesAnalysis> selectSalesData() throws Exception {
+	Logger logger = Logger.getLogger(SalesDataServiceImpl.class);
+
+	public List<DailySalesAnalysis> selectSalesData() {
 		/**
 		 * 先从redis中找
 		 */
 		// RedisUtil redis = RedisUtil.getRedis();
 		// String res = redis.getdat("AllSalesData");
 
-		MemcacheUtil memcache = MemcacheUtil.getInstance();
-		String res = memcache.getDat("AllSalesData", String.class);
-
+		MemcacheUtil memcache = null;
 		List<DailySalesAnalysis> resList = null;
-		if (res != null) {
-			// 从redis中取数据
-			resList = JSON.parseArray(res, DailySalesAnalysis.class);
 
-			// redis.destroy();
-			memcache.destory();
-			return resList;
+		try {
+			memcache = MemcacheUtil.getInstance();
+			String res = memcache.getDat("AllSalesData", String.class);
+
+			if (res != null) {
+				// 从redis中取数据
+				resList = JSON.parseArray(res, DailySalesAnalysis.class);
+
+				// redis.destroy();
+				memcache.destory();
+				return resList;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error("get memcache error! (get AllSalesData) >>> " + e.getMessage());
 		}
+
 		logger.error("get memcache null! (get AllSalesData)");
 
 		/**
 		 * redis找不到
 		 */
-		resList = dao.selectAllSalesData();
-		String outStr = JSON.toJSONString(resList);
 		// redis.setdat("AllSalesData", outStr);
-		memcache.setDat("AllSalesData", outStr);
+		try {
+			resList = dao.selectAllSalesData();
+			String outStr = JSON.toJSONString(resList);
+
+			memcache.setDat("AllSalesData", outStr);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error("insert memcache error! (set AllSalesData) >>> " + e.getMessage());
+		} finally {
+			try {
+				memcache.destory();
+			} catch (IOException e) {
+				e.printStackTrace();
+				logger.error("memcache close error! (set AllSalesData) >>> " + e.getMessage());
+			}
+		}
 
 		// redis.destroy();
-		memcache.destory();
 		return resList;
 	}
 
 	// 所有日常销售数据--16年
-	public List<DailySalesAnalysis> selectAllSalesData2016() throws Exception {
+	public List<DailySalesAnalysis> selectAllSalesData2016() {
 		/**
 		 * 先从redis中找
 		 */
 		// RedisUtil redis = RedisUtil.getRedis();
 		// String res = redis.getdat("AllSalesData2016");
 
-		MemcacheUtil memcache = MemcacheUtil.getInstance();
-		String res = memcache.getDat("AllSalesData2016", String.class);
-
+		MemcacheUtil memcache = null;
 		List<DailySalesAnalysis> resList = null;
-		if (res != null) {
-			// 从redis中取数据
-			resList = JSON.parseArray(res, DailySalesAnalysis.class);
+		try {
+			memcache = MemcacheUtil.getInstance();
+			String res = memcache.getDat("AllSalesData2016", String.class);
 
-			// redis.destroy();
-			memcache.destory();
-			return resList;
+			if (res != null) {
+				// 从redis中取数据
+				resList = JSON.parseArray(res, DailySalesAnalysis.class);
+
+				// redis.destroy();
+				memcache.destory();
+				return resList;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error("get memcache error! (get AllSalesData2016) >>> " + e.getMessage());
 		}
+
 		logger.error("get memcache null! (get AllSalesData2016)");
 
 		/**
 		 * redis找不到
 		 */
-		resList = dao.selectAllSalesData2016();
-		String outStr = JSON.toJSONString(resList);
 		// redis.setdat("AllSalesData2016", outStr);
-		memcache.setDat("AllSalesData2016", outStr);
+		try {
+			resList = dao.selectAllSalesData2016();
+			String outStr = JSON.toJSONString(resList);
+
+			memcache.setDat("AllSalesData2016", outStr);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error("insert memcache error! (set AllSalesData2016) >>> " + e.getMessage());
+		} finally {
+			try {
+				memcache.destory();
+			} catch (IOException e) {
+				e.printStackTrace();
+				logger.error("memcache close error! (set AllSalesData2016) >>> " + e.getMessage());
+			}
+		}
 
 		// redis.destroy();
-		memcache.destory();
 		return resList;
 	}
 

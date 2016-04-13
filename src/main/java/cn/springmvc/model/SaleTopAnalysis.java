@@ -13,6 +13,8 @@ public class SaleTopAnalysis {
 
 	private String goods_class_name;
 
+	private String CARGO_NO;
+
 	private String CARGO_NAME;
 
 	private String purchaseAmount;
@@ -69,6 +71,14 @@ public class SaleTopAnalysis {
 
 	public void setGoods_class_name(String goods_class_name) {
 		this.goods_class_name = goods_class_name;
+	}
+
+	public String getCARGO_NO() {
+		return CARGO_NO;
+	}
+
+	public void setCARGO_NO(String cARGO_NO) {
+		CARGO_NO = cARGO_NO;
 	}
 
 	public String getCARGO_NAME() {
@@ -143,11 +153,9 @@ public class SaleTopAnalysis {
 		this.jinbuAmount = jinbuAmount;
 	}
 
-	public SaleTopAnalysis(String oRDER_CREATE_DATE, String sTORE_TYPENAME,
-			String sTORE_NAME, String cLIENT_TYPENAME, String goods_class_name,
-			String cARGO_NAME, String purchaseAmount, String pAYAMOUNT,
-			String saleCount, String sALEAMOUNT, String totalRate,
-			String ratePercent, String jinbuCount, String jinbuAmount) {
+	public SaleTopAnalysis(String oRDER_CREATE_DATE, String sTORE_TYPENAME, String sTORE_NAME, String cLIENT_TYPENAME,
+			String goods_class_name, String cARGO_NAME, String purchaseAmount, String pAYAMOUNT, String saleCount,
+			String sALEAMOUNT, String totalRate, String ratePercent, String jinbuCount, String jinbuAmount) {
 		super();
 		ORDER_CREATE_DATE = oRDER_CREATE_DATE;
 		STORE_TYPENAME = sTORE_TYPENAME;

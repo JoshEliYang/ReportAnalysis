@@ -52,10 +52,11 @@ public class UserAnalysisServiceImpl implements UserAnalysisService {
 			logger.error("get memcache error >>> " + e.getMessage());
 		}
 
-		resList = userDao.getUerAnalysisWithExpenseRecord();
-		String outStr = JSON.toJSONString(resList);
 		// redis.setdat(Key, outStr);
 		try {
+			resList = userDao.getUerAnalysisWithExpenseRecord();
+			String outStr = JSON.toJSONString(resList);
+
 			memcache.setDat(Key, outStr);
 			// redis.destroy();
 			memcache.destory();
@@ -109,11 +110,12 @@ public class UserAnalysisServiceImpl implements UserAnalysisService {
 			logger.error("get memcache error >>> " + e.getMessage());
 		}
 
-		resList = userDao.getUserAnalysisWithExpenseRecordPage(st, ed);
-		String outStr = JSON.toJSONString(resList);
 		// redis.setdat(Key, outStr);
 
 		try {
+			resList = userDao.getUserAnalysisWithExpenseRecordPage(st, ed);
+			String outStr = JSON.toJSONString(resList);
+
 			memcache.setDat(Key, outStr);
 			// redis.destroy();
 			memcache.destory();
@@ -152,10 +154,11 @@ public class UserAnalysisServiceImpl implements UserAnalysisService {
 			logger.error("get memcache error >>> " + e.getMessage());
 		}
 
-		resList = userDao.getUserAnalysisNoExpenseRecord();
-		String outStr = JSON.toJSONString(resList);
 		// redis.setdat(Key, outStr);
 		try {
+			resList = userDao.getUserAnalysisNoExpenseRecord();
+			String outStr = JSON.toJSONString(resList);
+
 			memcache.setDat(Key, outStr);
 			// redis.destroy();
 			memcache.destory();
@@ -209,10 +212,11 @@ public class UserAnalysisServiceImpl implements UserAnalysisService {
 			logger.error("get memcache error >>> " + e.getMessage());
 		}
 
-		resList = userDao.getUserAnalysisNoExpenseRecordPage(st, ed);
-		String outStr = JSON.toJSONString(resList);
 		// redis.setdat(Key, outStr);
 		try {
+			resList = userDao.getUserAnalysisNoExpenseRecordPage(st, ed);
+			String outStr = JSON.toJSONString(resList);
+
 			memcache.setDat(Key, outStr);
 			// redis.destroy();
 			memcache.destory();
@@ -265,9 +269,10 @@ public class UserAnalysisServiceImpl implements UserAnalysisService {
 			logger.error("get memcache error >>> " + e.getMessage());
 		}
 
-		resDat = userDao.getNumOfUserAnalysisValid();
 		// redis.setdat(Key, String.valueOf(resDat));
 		try {
+			resDat = userDao.getNumOfUserAnalysisValid();
+
 			memcache.setDat(Key, String.valueOf(resDat));
 			// redis.destroy();
 			memcache.destory();
@@ -315,9 +320,10 @@ public class UserAnalysisServiceImpl implements UserAnalysisService {
 			logger.error("get memcache error >>> " + e.getMessage());
 		}
 
-		resDat = userDao.getNumOfUserAnalysisInvalid();
 		// redis.setdat(Key, String.valueOf(resDat));
 		try {
+			resDat = userDao.getNumOfUserAnalysisInvalid();
+
 			memcache.setDat(Key, String.valueOf(resDat));
 			// redis.destroy();
 			memcache.destory();

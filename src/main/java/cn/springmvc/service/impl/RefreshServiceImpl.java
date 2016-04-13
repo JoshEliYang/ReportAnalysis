@@ -24,10 +24,11 @@ import cn.springmvc.service.RefreshService;
 
 /**
  * 定时任务
+ * 
  * @author johsnon
  *
  */
-//@Service("activityAction")
+// @Service("activityAction")
 @Service()
 public class RefreshServiceImpl implements RefreshService {
 	@Autowired
@@ -85,8 +86,17 @@ public class RefreshServiceImpl implements RefreshService {
 		// 获得bean --> 所有流量数据的DAO
 		// LastYearTrafficAnalysisDAO trafficAnalysisDao =
 		// context.getBean(LastYearTrafficAnalysisDAO.class);
-		List<LastYearTrafficAnalysis> resList = trafficAnalysisDao.selectAllTrafficAnalysis();
-		String outStr = JSON.toJSONString(resList);
+		List<LastYearTrafficAnalysis> resList = null;
+		String outStr = null;
+
+		try {
+			resList = trafficAnalysisDao.selectAllTrafficAnalysis();
+			outStr = JSON.toJSONString(resList);
+		} catch (Exception e1) {
+			e1.printStackTrace();
+			logger.error("get Dao error >>> " + e1.getMessage());
+			return;
+		}
 		// RedisUtil redis = RedisUtil.getRedis();
 		// redis.setdat("AllTrafficAnalysisData", outStr);
 		// redis.destroy();
@@ -115,8 +125,16 @@ public class RefreshServiceImpl implements RefreshService {
 	void DailySales() {
 		// 获得bean
 		// DailySalesDAO dao = context.getBean(DailySalesDAO.class);
-		List<DailySalesAnalysis> resList = dao.selectAllSalesData();
-		String outStr = JSON.toJSONString(resList);
+		List<DailySalesAnalysis> resList;
+		String outStr = null;
+		try {
+			resList = dao.selectAllSalesData();
+			outStr = JSON.toJSONString(resList);
+		} catch (Exception e1) {
+			e1.printStackTrace();
+			logger.error("get Dao error >>> " + e1.getMessage());
+			return;
+		}
 		// RedisUtil redis = RedisUtil.getRedis();
 		// redis.setdat("AllSalesData", outStr);
 		// redis.destroy();
@@ -144,8 +162,16 @@ public class RefreshServiceImpl implements RefreshService {
 	void DailySales2016() {
 		// 获得bean
 		// DailySalesDAO dao = context.getBean(DailySalesDAO.class);
-		List<DailySalesAnalysis> resList = dao.selectAllSalesData2016();
-		String outStr = JSON.toJSONString(resList);
+		List<DailySalesAnalysis> resList;
+		String outStr = null;
+		try {
+			resList = dao.selectAllSalesData2016();
+			outStr = JSON.toJSONString(resList);
+		} catch (Exception e1) {
+			e1.printStackTrace();
+			logger.error("get Dao error >>> " + e1.getMessage());
+			return;
+		}
 		// RedisUtil redis = RedisUtil.getRedis();
 		// redis.setdat("AllSalesData2016", outStr);
 		// redis.destroy();
@@ -173,8 +199,17 @@ public class RefreshServiceImpl implements RefreshService {
 	void SaleTopAnalysis() {
 		// SaleTopAnalysisDAO saleTopAnalysisdao =
 		// context.getBean(SaleTopAnalysisDAO.class);
-		List<SaleTopAnalysis> resList = saleTopAnalysisdao.selectAllSaleTopData();
-		String outStr = JSON.toJSONString(resList);
+		List<SaleTopAnalysis> resList;
+		String outStr = null;
+
+		try {
+			resList = saleTopAnalysisdao.selectAllSaleTopData();
+			outStr = JSON.toJSONString(resList);
+		} catch (Exception e1) {
+			e1.printStackTrace();
+			logger.error("get Dao error >>> " + e1.getMessage());
+			return;
+		}
 		// RedisUtil redis = RedisUtil.getRedis();
 		// redis.setdat("AllSaleTopData", outStr);
 		// redis.destroy();
@@ -202,8 +237,16 @@ public class RefreshServiceImpl implements RefreshService {
 	void ThisYearTrafficAnalysis() {
 		// ThisYearTrafficAnalysisDAO thisYearTrafficAnalysisDAO =
 		// context.getBean(ThisYearTrafficAnalysisDAO.class);
-		List<ThisYearTrafficAnalysis> resList = thisYearTrafficAnalysisDAO.selectAllTrafficAnalysis();
-		String outStr = JSON.toJSONString(resList);
+		List<ThisYearTrafficAnalysis> resList = null;
+		String outStr = null;
+		try {
+			resList = thisYearTrafficAnalysisDAO.selectAllTrafficAnalysis();
+			outStr = JSON.toJSONString(resList);
+		} catch (Exception e1) {
+			e1.printStackTrace();
+			logger.error("get Dao error >>> " + e1.getMessage());
+			return;
+		}
 		// RedisUtil redis = RedisUtil.getRedis();
 		// redis.setdat("ThisYearAllTrafficAnalysis", outStr);
 		// redis.destroy();
@@ -233,7 +276,14 @@ public class RefreshServiceImpl implements RefreshService {
 	int UserValidNum() {
 		String Key = "UserValidNum";
 		// UserAnalysisDao userDao = context.getBean(UserAnalysisDao.class);
-		int resDat = userDao.getNumOfUserAnalysisValid();
+		int resDat = 0;
+		try {
+			resDat = userDao.getNumOfUserAnalysisValid();
+		} catch (Exception e1) {
+			e1.printStackTrace();
+			logger.error("get Dao error >>> " + e1.getMessage());
+			return 0;
+		}
 		// RedisUtil redis = RedisUtil.getRedis();
 		// redis.setdat(Key, String.valueOf(resDat));
 		// redis.destroy();
@@ -266,8 +316,16 @@ public class RefreshServiceImpl implements RefreshService {
 	void UserValidAnalysis(int st, int offset) {
 		String Key = "UserValidFrom" + st + "To" + offset;
 		// UserAnalysisDao userDao = context.getBean(UserAnalysisDao.class);
-		List<UserAnalysis> resList = userDao.getUserAnalysisWithExpenseRecordPage(st, offset);
-		String outStr = JSON.toJSONString(resList);
+		List<UserAnalysis> resList = null;
+		String outStr = null;
+		try {
+			resList = userDao.getUserAnalysisWithExpenseRecordPage(st, offset);
+			outStr = JSON.toJSONString(resList);
+		} catch (Exception e1) {
+			e1.printStackTrace();
+			logger.error("get Dao error >>> " + e1.getMessage());
+			return;
+		}
 		// RedisUtil redis = RedisUtil.getRedis();
 		// redis.setdat(Key, outStr);
 		// redis.destroy();
@@ -295,8 +353,17 @@ public class RefreshServiceImpl implements RefreshService {
 	void AllUserValidAnalysis() {
 		String Key = "UerAnalysisWithExpenseRecord";
 		// UserAnalysisDao userDao = context.getBean(UserAnalysisDao.class);
-		List<UserAnalysis> resList = userDao.getUerAnalysisWithExpenseRecord();
-		String outStr = JSON.toJSONString(resList);
+		List<UserAnalysis> resList = null;
+		String outStr = null;
+
+		try {
+			resList = userDao.getUerAnalysisWithExpenseRecord();
+			outStr = JSON.toJSONString(resList);
+		} catch (Exception e1) {
+			e1.printStackTrace();
+			logger.error("get Dao error >>> " + e1.getMessage());
+			return;
+		}
 		// RedisUtil redis = RedisUtil.getRedis();
 		// redis.setdat(Key, outStr);
 		// redis.destroy();
@@ -326,7 +393,14 @@ public class RefreshServiceImpl implements RefreshService {
 	int UserInvalidNum() {
 		String Key = "UserInvalidNum";
 		// UserAnalysisDao userDao = context.getBean(UserAnalysisDao.class);
-		int resDat = userDao.getNumOfUserAnalysisInvalid();
+		int resDat = 0;
+		try {
+			resDat = userDao.getNumOfUserAnalysisInvalid();
+		} catch (Exception e1) {
+			e1.printStackTrace();
+			logger.error("get Dao error >>> " + e1.getMessage());
+			return 0;
+		}
 		// RedisUtil redis = RedisUtil.getRedis();
 		// redis.setdat(Key, String.valueOf(resDat));
 		// redis.destroy();
@@ -359,8 +433,16 @@ public class RefreshServiceImpl implements RefreshService {
 	void UserInvalidAnalysis(int st, int offset) {
 		String Key = "UserInvalidFrom" + st + "To" + offset;
 		// UserAnalysisDao userDao = context.getBean(UserAnalysisDao.class);
-		List<UserAnalysis> resList = userDao.getUserAnalysisNoExpenseRecordPage(st, offset);
-		String outStr = JSON.toJSONString(resList);
+		List<UserAnalysis> resList = null;
+		String outStr = null;
+		try {
+			resList = userDao.getUserAnalysisNoExpenseRecordPage(st, offset);
+			outStr = JSON.toJSONString(resList);
+		} catch (Exception e1) {
+			e1.printStackTrace();
+			logger.error("get Dao error >>> " + e1.getMessage());
+			return;
+		}
 		// RedisUtil redis = RedisUtil.getRedis();
 		// redis.setdat(Key, outStr);
 		// redis.destroy();
@@ -388,8 +470,16 @@ public class RefreshServiceImpl implements RefreshService {
 	void AllUserInvalidAnalysis() {
 		String Key = "UserAnalysisNoExpenseRecord";
 		// UserAnalysisDao userDao = context.getBean(UserAnalysisDao.class);
-		List<UserAnalysis> resList = userDao.getUserAnalysisNoExpenseRecord();
-		String outStr = JSON.toJSONString(resList);
+		List<UserAnalysis> resList = null;
+		String outStr = null;
+		try {
+			resList = userDao.getUserAnalysisNoExpenseRecord();
+			outStr = JSON.toJSONString(resList);
+		} catch (Exception e1) {
+			e1.printStackTrace();
+			logger.error("get Dao error >>> " + e1.getMessage());
+			return;
+		}
 		// RedisUtil redis = RedisUtil.getRedis();
 		// redis.setdat(Key, outStr);
 		// redis.destroy();

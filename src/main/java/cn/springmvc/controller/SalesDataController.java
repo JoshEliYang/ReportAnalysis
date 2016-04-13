@@ -16,6 +16,11 @@ import cn.springmvc.service.SalesDataService;
 
 import com.springmvc.utils.HttpUtils;
 
+/**
+ * 
+ * @author johsnon
+ *
+ */
 @Scope("prototype")
 @Controller
 @RequestMapping("/sales")
@@ -36,29 +41,27 @@ public class SalesDataController {
 	@RequestMapping(method = RequestMethod.GET)
 	public Map<String, Object> getAllSalesData() {
 		List<DailySalesAnalysis> list = null;
-		try {
-			list = salesDataService.selectSalesData();
-			return HttpUtils.generateResponse("0", "请求成功", list);
+		list = salesDataService.selectSalesData();
 
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error("getAllSalesData contorller error >>> " + e.getMessage());
-			return HttpUtils.generateResponse("-1", "查询失败", null);
+		if (list != null) {
+			return HttpUtils.generateResponse("0", "请求成功", list);
 		}
+
+		logger.error("getAllSalesData contorller error >>> ");
+		return HttpUtils.generateResponse("-1", "查询失败", null);
 	}
 
 	@ResponseBody
 	@RequestMapping(value = "/2016", method = RequestMethod.GET)
 	public Map<String, Object> getAllSalesData2016() {
 		List<DailySalesAnalysis> list = null;
-		try {
-			list = salesDataService.selectAllSalesData2016();
-			return HttpUtils.generateResponse("0", "请求成功", list);
+		list = salesDataService.selectAllSalesData2016();
 
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error("getAllSalesData2016 contorller error >>> " + e.getMessage());
-			return HttpUtils.generateResponse("-1", "查询失败", null);
+		if (list != null) {
+			return HttpUtils.generateResponse("0", "请求成功", list);
 		}
+
+		logger.error("getAllSalesData2016 contorller error >>> ");
+		return HttpUtils.generateResponse("-1", "查询失败", null);
 	}
 }

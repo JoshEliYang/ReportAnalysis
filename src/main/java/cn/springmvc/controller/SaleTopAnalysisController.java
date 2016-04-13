@@ -16,6 +16,11 @@ import cn.springmvc.service.SaleTopAnalysisService;
 
 import com.springmvc.utils.HttpUtils;
 
+/**
+ * 
+ * @author johsnon
+ *
+ */
 @Scope("prototype")
 @Controller
 @RequestMapping("/top")
@@ -36,15 +41,14 @@ public class SaleTopAnalysisController {
 	@RequestMapping(method = RequestMethod.GET)
 	public Map<String, Object> selectAllTopData() {
 		List<SaleTopAnalysis> list = null;
-		try {
-			list = saleTopAnalysisService.selectAllSaleTopData();
-			return HttpUtils.generateResponse("0", "请求成功", list);
+		list = saleTopAnalysisService.selectAllSaleTopData();
 
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error("selectAllTopData contorller error >>> " + e.getMessage());
-			return HttpUtils.generateResponse("-1", "查询失败", null);
+		if (list != null) {
+			return HttpUtils.generateResponse("0", "请求成功", list);
 		}
+
+		logger.error("selectAllTopData contorller error >>> ");
+		return HttpUtils.generateResponse("-1", "查询失败", null);
 	}
 
 }
