@@ -3,6 +3,7 @@ package cn.springmvc.controller;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
@@ -22,6 +23,8 @@ public class ThisYearTrafficAnalysisController {
 	@Autowired
 	public ThisYearTrafficAnalysisService thisYearTrafficAnalysisService;
 
+	Logger logger = Logger.getLogger(ThisYearTrafficAnalysisController.class);
+
 	/**
 	 * @author liqiang
 	 * @date 2016-02-01
@@ -33,11 +36,11 @@ public class ThisYearTrafficAnalysisController {
 	public Map<String, Object> selectAllTrafficData() {
 		List<ThisYearTrafficAnalysis> list = null;
 		try {
-			list = thisYearTrafficAnalysisService
-					.selectAllTrafficAnalysisData();
+			list = thisYearTrafficAnalysisService.selectAllTrafficAnalysisData();
 			return HttpUtils.generateResponse("0", "查询成功", list);
 		} catch (Exception e) {
 			e.printStackTrace();
+			logger.error("selectAllTrafficData contorller error >>> " + e.getMessage());
 			return HttpUtils.generateResponse("1", "请求失败", null);
 		}
 	}

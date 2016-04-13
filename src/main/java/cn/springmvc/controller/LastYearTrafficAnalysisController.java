@@ -3,6 +3,7 @@ package cn.springmvc.controller;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
@@ -23,6 +24,8 @@ public class LastYearTrafficAnalysisController {
 	@Autowired
 	public LastYearTrafficAnalysisServiceImpl trafficAnalysisService;
 
+	Logger logger = Logger.getLogger(LastYearTrafficAnalysisController.class);
+
 	/**
 	 * @author liqiang
 	 * @date 2016-02-01
@@ -38,6 +41,7 @@ public class LastYearTrafficAnalysisController {
 			return HttpUtils.generateResponse("0", "请求成功", list);
 		} catch (Exception e) {
 			e.printStackTrace();
+			logger.error("selectAllTrafficData controller error >>> " + e.getMessage());
 			return HttpUtils.generateResponse("-1", "查询失败", null);
 		}
 	}

@@ -1,11 +1,11 @@
-package cn.springmvc.listener;
+package cn.springmvc.service.impl;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.TimerTask;
 
 import org.apache.log4j.Logger;
-import org.springframework.web.context.WebApplicationContext;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.alibaba.fastjson.JSON;
 import com.springmvc.utils.MemcacheUtil;
@@ -20,26 +20,30 @@ import cn.springmvc.model.LastYearTrafficAnalysis;
 import cn.springmvc.model.SaleTopAnalysis;
 import cn.springmvc.model.ThisYearTrafficAnalysis;
 import cn.springmvc.model.UserAnalysis;
+import cn.springmvc.service.RefreshService;
 
 /**
- * 已废弃！
- * 每隔 固定时间 刷新缓存内容
- * 
+ * 定时任务
  * @author johsnon
  *
  */
-public class ReportRefresh extends TimerTask {
-	WebApplicationContext context = null;
+//@Service("activityAction")
+@Service()
+public class RefreshServiceImpl implements RefreshService {
+	@Autowired
+	public LastYearTrafficAnalysisDAO trafficAnalysisDao;
+	@Autowired
+	public DailySalesDAO dao;
+	@Autowired
+	public SaleTopAnalysisDAO saleTopAnalysisdao;
+	@Autowired
+	public ThisYearTrafficAnalysisDAO thisYearTrafficAnalysisDAO;
+	@Autowired
+	public UserAnalysisDao userDao;
 
-	Logger logger = Logger.getLogger(ReportRefresh.class);
+	Logger logger = Logger.getLogger(RefreshServiceImpl.class);
 
-	public ReportRefresh(WebApplicationContext context) {
-		super();
-		this.context = context;
-	}
-
-	@Override
-	public void run() {
+	public void refreshMemcache() {
 		// 日常经营分析 --2016
 		DailySales2016();
 		// 日常经营分析--2015
@@ -79,7 +83,8 @@ public class ReportRefresh extends TimerTask {
 	 */
 	void LastYearTrafficAnalysis() {
 		// 获得bean --> 所有流量数据的DAO
-		LastYearTrafficAnalysisDAO trafficAnalysisDao = context.getBean(LastYearTrafficAnalysisDAO.class);
+		// LastYearTrafficAnalysisDAO trafficAnalysisDao =
+		// context.getBean(LastYearTrafficAnalysisDAO.class);
 		List<LastYearTrafficAnalysis> resList = trafficAnalysisDao.selectAllTrafficAnalysis();
 		String outStr = JSON.toJSONString(resList);
 		// RedisUtil redis = RedisUtil.getRedis();
@@ -109,7 +114,7 @@ public class ReportRefresh extends TimerTask {
 	 */
 	void DailySales() {
 		// 获得bean
-		DailySalesDAO dao = context.getBean(DailySalesDAO.class);
+		// DailySalesDAO dao = context.getBean(DailySalesDAO.class);
 		List<DailySalesAnalysis> resList = dao.selectAllSalesData();
 		String outStr = JSON.toJSONString(resList);
 		// RedisUtil redis = RedisUtil.getRedis();
@@ -138,7 +143,7 @@ public class ReportRefresh extends TimerTask {
 	 */
 	void DailySales2016() {
 		// 获得bean
-		DailySalesDAO dao = context.getBean(DailySalesDAO.class);
+		// DailySalesDAO dao = context.getBean(DailySalesDAO.class);
 		List<DailySalesAnalysis> resList = dao.selectAllSalesData2016();
 		String outStr = JSON.toJSONString(resList);
 		// RedisUtil redis = RedisUtil.getRedis();
@@ -166,7 +171,8 @@ public class ReportRefresh extends TimerTask {
 	 * 刷新销售top数据
 	 */
 	void SaleTopAnalysis() {
-		SaleTopAnalysisDAO saleTopAnalysisdao = context.getBean(SaleTopAnalysisDAO.class);
+		// SaleTopAnalysisDAO saleTopAnalysisdao =
+		// context.getBean(SaleTopAnalysisDAO.class);
 		List<SaleTopAnalysis> resList = saleTopAnalysisdao.selectAllSaleTopData();
 		String outStr = JSON.toJSONString(resList);
 		// RedisUtil redis = RedisUtil.getRedis();
@@ -194,7 +200,8 @@ public class ReportRefresh extends TimerTask {
 	 * 刷新当年流量数据
 	 */
 	void ThisYearTrafficAnalysis() {
-		ThisYearTrafficAnalysisDAO thisYearTrafficAnalysisDAO = context.getBean(ThisYearTrafficAnalysisDAO.class);
+		// ThisYearTrafficAnalysisDAO thisYearTrafficAnalysisDAO =
+		// context.getBean(ThisYearTrafficAnalysisDAO.class);
 		List<ThisYearTrafficAnalysis> resList = thisYearTrafficAnalysisDAO.selectAllTrafficAnalysis();
 		String outStr = JSON.toJSONString(resList);
 		// RedisUtil redis = RedisUtil.getRedis();
@@ -225,7 +232,7 @@ public class ReportRefresh extends TimerTask {
 	 */
 	int UserValidNum() {
 		String Key = "UserValidNum";
-		UserAnalysisDao userDao = context.getBean(UserAnalysisDao.class);
+		// UserAnalysisDao userDao = context.getBean(UserAnalysisDao.class);
 		int resDat = userDao.getNumOfUserAnalysisValid();
 		// RedisUtil redis = RedisUtil.getRedis();
 		// redis.setdat(Key, String.valueOf(resDat));
@@ -258,7 +265,7 @@ public class ReportRefresh extends TimerTask {
 	 */
 	void UserValidAnalysis(int st, int offset) {
 		String Key = "UserValidFrom" + st + "To" + offset;
-		UserAnalysisDao userDao = context.getBean(UserAnalysisDao.class);
+		// UserAnalysisDao userDao = context.getBean(UserAnalysisDao.class);
 		List<UserAnalysis> resList = userDao.getUserAnalysisWithExpenseRecordPage(st, offset);
 		String outStr = JSON.toJSONString(resList);
 		// RedisUtil redis = RedisUtil.getRedis();
@@ -287,7 +294,7 @@ public class ReportRefresh extends TimerTask {
 	 */
 	void AllUserValidAnalysis() {
 		String Key = "UerAnalysisWithExpenseRecord";
-		UserAnalysisDao userDao = context.getBean(UserAnalysisDao.class);
+		// UserAnalysisDao userDao = context.getBean(UserAnalysisDao.class);
 		List<UserAnalysis> resList = userDao.getUerAnalysisWithExpenseRecord();
 		String outStr = JSON.toJSONString(resList);
 		// RedisUtil redis = RedisUtil.getRedis();
@@ -318,7 +325,7 @@ public class ReportRefresh extends TimerTask {
 	 */
 	int UserInvalidNum() {
 		String Key = "UserInvalidNum";
-		UserAnalysisDao userDao = context.getBean(UserAnalysisDao.class);
+		// UserAnalysisDao userDao = context.getBean(UserAnalysisDao.class);
 		int resDat = userDao.getNumOfUserAnalysisInvalid();
 		// RedisUtil redis = RedisUtil.getRedis();
 		// redis.setdat(Key, String.valueOf(resDat));
@@ -351,7 +358,7 @@ public class ReportRefresh extends TimerTask {
 	 */
 	void UserInvalidAnalysis(int st, int offset) {
 		String Key = "UserInvalidFrom" + st + "To" + offset;
-		UserAnalysisDao userDao = context.getBean(UserAnalysisDao.class);
+		// UserAnalysisDao userDao = context.getBean(UserAnalysisDao.class);
 		List<UserAnalysis> resList = userDao.getUserAnalysisNoExpenseRecordPage(st, offset);
 		String outStr = JSON.toJSONString(resList);
 		// RedisUtil redis = RedisUtil.getRedis();
@@ -380,7 +387,7 @@ public class ReportRefresh extends TimerTask {
 	 */
 	void AllUserInvalidAnalysis() {
 		String Key = "UserAnalysisNoExpenseRecord";
-		UserAnalysisDao userDao = context.getBean(UserAnalysisDao.class);
+		// UserAnalysisDao userDao = context.getBean(UserAnalysisDao.class);
 		List<UserAnalysis> resList = userDao.getUserAnalysisNoExpenseRecord();
 		String outStr = JSON.toJSONString(resList);
 		// RedisUtil redis = RedisUtil.getRedis();

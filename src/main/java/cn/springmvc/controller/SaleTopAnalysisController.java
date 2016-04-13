@@ -3,6 +3,7 @@ package cn.springmvc.controller;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
@@ -23,6 +24,8 @@ public class SaleTopAnalysisController {
 	@Autowired
 	public SaleTopAnalysisService saleTopAnalysisService;
 
+	Logger logger = Logger.getLogger(SaleTopAnalysisController.class);
+
 	/**
 	 * @author liqiang
 	 * @date 2016-02-01
@@ -39,6 +42,7 @@ public class SaleTopAnalysisController {
 
 		} catch (Exception e) {
 			e.printStackTrace();
+			logger.error("selectAllTopData contorller error >>> " + e.getMessage());
 			return HttpUtils.generateResponse("-1", "查询失败", null);
 		}
 	}
