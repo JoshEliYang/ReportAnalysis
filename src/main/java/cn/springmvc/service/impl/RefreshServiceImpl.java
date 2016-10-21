@@ -45,6 +45,9 @@ public class RefreshServiceImpl implements RefreshService {
 	Logger logger = Logger.getLogger(RefreshServiceImpl.class);
 
 	public void refreshMemcache() {
+
+		logger.error("start to refresh memcache ...");
+
 		// 日常经营分析 --2016
 		DailySales2016();
 		// 日常经营分析--2015
@@ -77,6 +80,8 @@ public class RefreshServiceImpl implements RefreshService {
 			UserInvalidAnalysis(i * INoffset, INoffset); // 缓存每个无效数据分页
 		}
 		AllUserInvalidAnalysis(); // 缓存所有无效用户数据
+
+		logger.error("refresh memcache finished ...");
 	}
 
 	/**
@@ -105,6 +110,7 @@ public class RefreshServiceImpl implements RefreshService {
 		try {
 			memcache = MemcacheUtil.getInstance();
 			memcache.setDat("AllTrafficAnalysisData", outStr);
+			logger.error("insert AllTrafficAnalysisData >>>> \n" + outStr);
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error("memcache insert error >>> " + e.getMessage());
@@ -143,6 +149,7 @@ public class RefreshServiceImpl implements RefreshService {
 		try {
 			memcache = MemcacheUtil.getInstance();
 			memcache.setDat("AllSalesData", outStr);
+			logger.error("insert AllSalesData >>>> \n" + outStr);
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error("memcache insert error >>> " + e.getMessage());
@@ -180,6 +187,7 @@ public class RefreshServiceImpl implements RefreshService {
 		try {
 			memcache = MemcacheUtil.getInstance();
 			memcache.setDat("AllSalesData2016", outStr);
+			logger.error("insert AllSalesData2016 >>>> \n" + outStr);
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error("memcache insert error >>> " + e.getMessage());
@@ -218,6 +226,7 @@ public class RefreshServiceImpl implements RefreshService {
 		try {
 			memcache = MemcacheUtil.getInstance();
 			memcache.setDat("AllSaleTopData", outStr);
+			logger.error("insert AllSaleTopData >>>> \n" + outStr);
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error("memcache insert error >>> " + e.getMessage());
@@ -255,6 +264,7 @@ public class RefreshServiceImpl implements RefreshService {
 		try {
 			memcache = MemcacheUtil.getInstance();
 			memcache.setDat("ThisYearAllTrafficAnalysis", outStr);
+			logger.error("insert ThisYearAllTrafficAnalysis >>>> \n" + outStr);
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error("memcache insert error >>> " + e.getMessage());
@@ -292,6 +302,7 @@ public class RefreshServiceImpl implements RefreshService {
 		try {
 			memcache = MemcacheUtil.getInstance();
 			memcache.setDat(Key, String.valueOf(resDat));
+			logger.error("insert " + Key + " >>>> \n" + String.valueOf(resDat));
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error("memcache insert error >>> " + e.getMessage());
@@ -334,6 +345,7 @@ public class RefreshServiceImpl implements RefreshService {
 		try {
 			memcache = MemcacheUtil.getInstance();
 			memcache.setDat(Key, outStr);
+			logger.error("insert " + Key + " >>>> \n" + outStr);
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error("memcache insert error >>> " + e.getMessage());
@@ -372,6 +384,7 @@ public class RefreshServiceImpl implements RefreshService {
 		try {
 			memcache = MemcacheUtil.getInstance();
 			memcache.setDat(Key, outStr);
+			logger.error("insert " + Key + " >>>> \n" + outStr);
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error("memcache insert error >>> " + e.getMessage());
@@ -409,6 +422,7 @@ public class RefreshServiceImpl implements RefreshService {
 		try {
 			memcache = MemcacheUtil.getInstance();
 			memcache.setDat(Key, String.valueOf(resDat));
+			logger.error("insert " + Key + " >>>> \n" + String.valueOf(resDat));
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error("memcache insert error >>> " + e.getMessage());
@@ -451,6 +465,7 @@ public class RefreshServiceImpl implements RefreshService {
 		try {
 			memcache = MemcacheUtil.getInstance();
 			memcache.setDat(Key, outStr);
+			logger.error("insert " + Key + " >>>> \n" + outStr);
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error("memcache insert error >>> " + e.getMessage());
@@ -488,6 +503,7 @@ public class RefreshServiceImpl implements RefreshService {
 		try {
 			memcache = MemcacheUtil.getInstance();
 			memcache.setDat(Key, outStr);
+			logger.error("insert " + Key + " >>>> \n" + outStr);
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error("memcache insert error >>> " + e.getMessage());

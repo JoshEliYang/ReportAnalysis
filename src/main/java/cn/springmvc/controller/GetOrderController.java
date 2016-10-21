@@ -27,14 +27,14 @@ import cn.springmvc.service.GetOrderService;
 public class GetOrderController {
 	@Autowired
 	public GetOrderService service;
-	
+
 	@ResponseBody
 	@RequestMapping(method = RequestMethod.POST)
-	public Map<String,Object> getUserOrders(@RequestBody String ID){
-		List<Order> res=null;
-		try{
-			res=service.getOrders(ID);
-		}catch(Exception e){
+	public Map<String, Object> getUserOrders(@RequestBody String ID) {
+		List<Order> res = null;
+		try {
+			res = service.getOrders(ID);
+		} catch (Exception e) {
 			e.printStackTrace();
 			return HttpUtils.generateResponse("1", "请求失败", null);
 		}

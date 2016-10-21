@@ -28,12 +28,6 @@ public class SalesDataServiceImpl implements SalesDataService {
 	Logger logger = Logger.getLogger(SalesDataServiceImpl.class);
 
 	public List<DailySalesAnalysis> selectSalesData() {
-		/**
-		 * 先从redis中找
-		 */
-		// RedisUtil redis = RedisUtil.getRedis();
-		// String res = redis.getdat("AllSalesData");
-
 		MemcacheUtil memcache = null;
 		List<DailySalesAnalysis> resList = null;
 
@@ -42,10 +36,8 @@ public class SalesDataServiceImpl implements SalesDataService {
 			String res = memcache.getDat("AllSalesData", String.class);
 
 			if (res != null) {
-				// 从redis中取数据
 				resList = JSON.parseArray(res, DailySalesAnalysis.class);
 
-				// redis.destroy();
 				memcache.destory();
 				return resList;
 			}
@@ -56,10 +48,6 @@ public class SalesDataServiceImpl implements SalesDataService {
 
 		logger.error("get memcache null! (get AllSalesData)");
 
-		/**
-		 * redis找不到
-		 */
-		// redis.setdat("AllSalesData", outStr);
 		try {
 			resList = dao.selectAllSalesData();
 			String outStr = JSON.toJSONString(resList);
@@ -77,18 +65,11 @@ public class SalesDataServiceImpl implements SalesDataService {
 			}
 		}
 
-		// redis.destroy();
 		return resList;
 	}
 
 	// 所有日常销售数据--16年
 	public List<DailySalesAnalysis> selectAllSalesData2016() {
-		/**
-		 * 先从redis中找
-		 */
-		// RedisUtil redis = RedisUtil.getRedis();
-		// String res = redis.getdat("AllSalesData2016");
-
 		MemcacheUtil memcache = null;
 		List<DailySalesAnalysis> resList = null;
 		try {
@@ -96,10 +77,8 @@ public class SalesDataServiceImpl implements SalesDataService {
 			String res = memcache.getDat("AllSalesData2016", String.class);
 
 			if (res != null) {
-				// 从redis中取数据
 				resList = JSON.parseArray(res, DailySalesAnalysis.class);
 
-				// redis.destroy();
 				memcache.destory();
 				return resList;
 			}
@@ -110,10 +89,6 @@ public class SalesDataServiceImpl implements SalesDataService {
 
 		logger.error("get memcache null! (get AllSalesData2016)");
 
-		/**
-		 * redis找不到
-		 */
-		// redis.setdat("AllSalesData2016", outStr);
 		try {
 			resList = dao.selectAllSalesData2016();
 			String outStr = JSON.toJSONString(resList);
@@ -131,7 +106,6 @@ public class SalesDataServiceImpl implements SalesDataService {
 			}
 		}
 
-		// redis.destroy();
 		return resList;
 	}
 

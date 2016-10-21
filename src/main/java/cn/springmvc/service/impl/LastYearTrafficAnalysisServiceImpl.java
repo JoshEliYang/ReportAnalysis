@@ -27,11 +27,6 @@ public class LastYearTrafficAnalysisServiceImpl implements LastYearTrafficAnalys
 	Logger logger = Logger.getLogger(LastYearTrafficAnalysisServiceImpl.class);
 
 	public List<LastYearTrafficAnalysis> selectAllTrafficAnalysisData() {
-		/**
-		 * 先从redis中找
-		 */
-		// RedisUtil redis = RedisUtil.getRedis();
-		// String res = redis.getdat("AllTrafficAnalysisData");
 
 		MemcacheUtil memcache = null;
 		List<LastYearTrafficAnalysis> resList = null;
@@ -43,7 +38,6 @@ public class LastYearTrafficAnalysisServiceImpl implements LastYearTrafficAnalys
 				// 从redis中取数据
 				resList = JSON.parseArray(res, LastYearTrafficAnalysis.class);
 
-				// redis.destroy();
 				memcache.destory();
 				return resList;
 			}

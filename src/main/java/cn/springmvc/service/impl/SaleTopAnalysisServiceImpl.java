@@ -28,12 +28,6 @@ public class SaleTopAnalysisServiceImpl implements SaleTopAnalysisService {
 	Logger logger = Logger.getLogger(SaleTopAnalysisServiceImpl.class);
 
 	public List<SaleTopAnalysis> selectAllSaleTopData() {
-		/**
-		 * 先从redis中找
-		 */
-		// RedisUtil redis = RedisUtil.getRedis();
-		// String res = redis.getdat("AllSaleTopData");
-
 		MemcacheUtil memcache = null;
 		List<SaleTopAnalysis> resList = null;
 
@@ -45,7 +39,6 @@ public class SaleTopAnalysisServiceImpl implements SaleTopAnalysisService {
 				// 从redis中取数据
 				resList = JSON.parseArray(res, SaleTopAnalysis.class);
 
-				// redis.destroy();
 				memcache.destory();
 				return resList;
 			}
@@ -56,15 +49,12 @@ public class SaleTopAnalysisServiceImpl implements SaleTopAnalysisService {
 
 		logger.error("get memcache null! (get AllSaleTopData)");
 
-		/**
-		 * redis找不到
-		 */
-		// redis.setdat("AllSaleTopData", outStr);
 		try {
 			resList = saleTopAnalysisdao.selectAllSaleTopData();
 			String outStr = JSON.toJSONString(resList);
 
 			memcache.setDat("AllSaleTopData", outStr);
+			logger.error("memcache insert dat >>> " + outStr);
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error("insert memcache error! (set AllSaleTopData) >>> " + e.getMessage());
@@ -77,7 +67,6 @@ public class SaleTopAnalysisServiceImpl implements SaleTopAnalysisService {
 			}
 		}
 
-		// redis.destroy();
 		return resList;
 	}
 

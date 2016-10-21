@@ -18,7 +18,7 @@ import cn.springmvc.service.GetOrderService;
 public class GetOrderServiceImpl implements GetOrderService {
 	@Autowired
 	public GetOrderDao dao;
-	
+
 	public List<Order> getOrders(String ID) throws Exception {
 		return dao.getOrders(ID);
 	}

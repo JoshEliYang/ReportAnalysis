@@ -27,12 +27,6 @@ public class ThisYearTrafficAnalysisServiceImpl implements ThisYearTrafficAnalys
 	Logger logger = Logger.getLogger(ThisYearTrafficAnalysisServiceImpl.class);
 
 	public List<ThisYearTrafficAnalysis> selectAllTrafficAnalysisData() {
-		/**
-		 * 先从redis中找
-		 */
-		// RedisUtil redis = RedisUtil.getRedis();
-		// String res = redis.getdat("ThisYearAllTrafficAnalysis");
-
 		MemcacheUtil memcache = null;
 		List<ThisYearTrafficAnalysis> resList = null;
 
@@ -44,7 +38,6 @@ public class ThisYearTrafficAnalysisServiceImpl implements ThisYearTrafficAnalys
 				// 从redis中取数据
 				resList = JSON.parseArray(res, ThisYearTrafficAnalysis.class);
 
-				// redis.destroy();
 				memcache.destory();
 				return resList;
 			}
@@ -54,10 +47,6 @@ public class ThisYearTrafficAnalysisServiceImpl implements ThisYearTrafficAnalys
 		}
 		logger.error("get memcache null! (get ThisYearAllTrafficAnalysis)");
 
-		/**
-		 * redis找不到
-		 */
-		// redis.setdat("ThisYearAllTrafficAnalysis", outStr);
 		try {
 			resList = thisYearTrafficAnalysisDAO.selectAllTrafficAnalysis();
 			String outStr = JSON.toJSONString(resList);
@@ -75,7 +64,6 @@ public class ThisYearTrafficAnalysisServiceImpl implements ThisYearTrafficAnalys
 			}
 		}
 
-		// redis.destroy();
 		return resList;
 	}
 

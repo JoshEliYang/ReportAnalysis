@@ -41,6 +41,7 @@ public class LastYearTrafficAnalysisController {
 	@RequestMapping(method = RequestMethod.GET)
 	public Map<String, Object> selectAllTrafficData() {
 		List<LastYearTrafficAnalysis> list = null;
+
 		list = trafficAnalysisService.selectAllTrafficAnalysisData();
 
 		if (list != null) {

@@ -30,8 +30,6 @@ public class UserAnalysisServiceImpl implements UserAnalysisService {
 	 */
 	public List<UserAnalysis> getUserAnalysisWithExpenseRecord() {
 		String Key = "UerAnalysisWithExpenseRecord";
-		// RedisUtil redis = RedisUtil.getRedis();
-		// String res = redis.getdat(Key);
 
 		MemcacheUtil memcache = null;
 		List<UserAnalysis> resList = null;
@@ -42,7 +40,6 @@ public class UserAnalysisServiceImpl implements UserAnalysisService {
 			if (res != null) {
 				resList = JSON.parseArray(res, UserAnalysis.class);
 
-				// redis.destroy();
 				memcache.destory();
 				return resList;
 			}
@@ -52,13 +49,11 @@ public class UserAnalysisServiceImpl implements UserAnalysisService {
 			logger.error("get memcache error >>> " + e.getMessage());
 		}
 
-		// redis.setdat(Key, outStr);
 		try {
 			resList = userDao.getUerAnalysisWithExpenseRecord();
 			String outStr = JSON.toJSONString(resList);
 
 			memcache.setDat(Key, outStr);
-			// redis.destroy();
 			memcache.destory();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -73,10 +68,6 @@ public class UserAnalysisServiceImpl implements UserAnalysisService {
 	public List<UserAnalysis> getUserAnalysisWithExpenseRecord(int st, int ed) {
 		// 拼接Redis Key
 		String Key = "UserValidFrom" + st + "To" + ed;
-
-		// 从redis中查找
-		// RedisUtil redis = RedisUtil.getRedis();
-		// String res = redis.getdat(Key);
 
 		MemcacheUtil memcache = null;
 		List<UserAnalysis> resList = null;
@@ -132,9 +123,6 @@ public class UserAnalysisServiceImpl implements UserAnalysisService {
 	public List<UserAnalysis> getUserAnalysisNoExpenseRecord() {
 		String Key = "UserAnalysisNoExpenseRecord";
 
-		// RedisUtil redis = RedisUtil.getRedis();
-		// String res = redis.getdat(Key);
-
 		MemcacheUtil memcache = null;
 		List<UserAnalysis> resList = null;
 		try {
@@ -144,7 +132,6 @@ public class UserAnalysisServiceImpl implements UserAnalysisService {
 			if (res != null) {
 				resList = JSON.parseArray(res, UserAnalysis.class);
 
-				// redis.destroy();
 				memcache.destory();
 				return resList;
 			}
@@ -154,13 +141,11 @@ public class UserAnalysisServiceImpl implements UserAnalysisService {
 			logger.error("get memcache error >>> " + e.getMessage());
 		}
 
-		// redis.setdat(Key, outStr);
 		try {
 			resList = userDao.getUserAnalysisNoExpenseRecord();
 			String outStr = JSON.toJSONString(resList);
 
 			memcache.setDat(Key, outStr);
-			// redis.destroy();
 			memcache.destory();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -175,10 +160,6 @@ public class UserAnalysisServiceImpl implements UserAnalysisService {
 	public List<UserAnalysis> getUserAnalysisNoExpenseRecord(int st, int ed) {
 		// 拼接Redis Key
 		String Key = "UserInvalidFrom" + st + "To" + ed;
-
-		// 从redis中查找
-		// RedisUtil redis = RedisUtil.getRedis();
-		// String res = redis.getdat(Key);
 
 		MemcacheUtil memcache = null;
 		List<UserAnalysis> resList = null;
@@ -231,10 +212,6 @@ public class UserAnalysisServiceImpl implements UserAnalysisService {
 	public int getNumOfUserAnalysisValid() {
 		// 拼接Redis Key
 		String Key = "UserValidNum";
-
-		// 从redis中查找
-		// RedisUtil redis = RedisUtil.getRedis();
-		// String res = redis.getdat(Key);
 
 		MemcacheUtil memcache = null;
 		int resDat = 0;
