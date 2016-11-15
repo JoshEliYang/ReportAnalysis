@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.springmvc.ReportDAO.PaymentSerialNumberDao">
+
+	<select id="getAll" parameterType="SerialNumberQuery"
+		resultType="PaymentSerialNumber">
+		SELECT
+		a.pay_order_create_time,
+		a.order_no,
+		a.out_trade_no,
+		a.pay_order_fee,
+		b.STORE_NAME,
+		c.item_name as pay_type
+		FROM
+		(
+		e_pay_order a
+		LEFT JOIN
+		e_order_info b ON (a.order_id = b.ORDER_ID)
+		)
+		LEFT JOIN
+		r_base_dict_item
+		c ON (a.pay_type = c.item_code)
+		WHERE
+		a.pay_order_create_time > #{startTime}
+		AND
+		a.pay_order_create_time &lt;=
+		#{endTime}
+
+		<if test="typeName != null">
+			AND c.item_name = #{typeName}
+		</if>
+
+		ORDER BY
+		pay_order_create_time DESC
+
+		<if test="isAll == false">
+			limit #{skip},#{limit}
+		</if>
+	</select>
+
+	<select id="getCount" parameterType="SerialNumberQuery"
+		resultType="Integer">
+		SELECT
+		count(*)
+		FROM
+		(
+		e_pay_order a
+		LEFT JOIN e_order_info b ON
+		(a.order_id = b.ORDER_ID)
+		)
+		LEFT JOIN r_base_dict_item c ON (a.pay_type
+		= c.item_code)
+		WHERE
+		a.pay_order_create_time > #{startTime}
+		AND
+		a.pay_order_create_time &lt;=
+		#{endTime}
+
+		<if test="typeName != null">
+			AND c.item_name = #{typeName}
+		</if>
+	</select>
+</mapper>
