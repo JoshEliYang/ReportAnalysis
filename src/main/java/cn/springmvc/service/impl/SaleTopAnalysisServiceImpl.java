@@ -11,6 +11,7 @@ import com.alibaba.fastjson.JSON;
 import com.springmvc.utils.MemcacheUtil;
 
 import cn.springmvc.ReportDAO.SaleTopAnalysisDAO;
+import cn.springmvc.model.PaginationParams;
 import cn.springmvc.model.SaleTopAnalysis;
 import cn.springmvc.service.SaleTopAnalysisService;
 
@@ -68,6 +69,16 @@ public class SaleTopAnalysisServiceImpl implements SaleTopAnalysisService {
 		}
 
 		return resList;
+	}
+
+	public List<SaleTopAnalysis> selectAllSaleTopData2(PaginationParams rp) throws Exception {
+		// TODO Auto-generated method stub
+		return saleTopAnalysisdao.selectAllSaleTopData2(rp);
+	}
+
+	public String selectAllSaleTopCount() {
+		// TODO Auto-generated method stub
+		return saleTopAnalysisdao.selectAllSaleTopCount();
 	}
 
 }

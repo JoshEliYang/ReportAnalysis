@@ -101,8 +101,6 @@ public class UserAnalysisServiceImpl implements UserAnalysisService {
 			logger.error("get memcache error >>> " + e.getMessage());
 		}
 
-		// redis.setdat(Key, outStr);
-
 		try {
 			resList = userDao.getUserAnalysisWithExpenseRecordPage(st, ed);
 			String outStr = JSON.toJSONString(resList);
@@ -310,5 +308,15 @@ public class UserAnalysisServiceImpl implements UserAnalysisService {
 		}
 
 		return resDat;
+	}
+
+	public String getvalidCount() {
+		// TODO Auto-generated method stub
+		return userDao.getvalidCount();
+	}
+
+	public String getinvalidCount() {
+		// TODO Auto-generated method stub
+		return userDao.getinvalidCount();
 	}
 }

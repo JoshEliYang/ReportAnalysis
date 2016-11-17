@@ -11,6 +11,8 @@ import com.alibaba.fastjson.JSON;
 import com.springmvc.utils.MemcacheUtil;
 
 import cn.springmvc.ReportDAO.LastYearTrafficAnalysisDAO;
+import cn.springmvc.model.DailyReportParams;
+import cn.springmvc.model.DailySalesAnalysis;
 import cn.springmvc.model.LastYearTrafficAnalysis;
 import cn.springmvc.service.LastYearTrafficAnalysisService;
 
@@ -79,6 +81,16 @@ public class LastYearTrafficAnalysisServiceImpl implements LastYearTrafficAnalys
 
 		// redis.destroy();
 		return resList;
+	}
+
+	public List<DailySalesAnalysis> selecttraffic(DailyReportParams rp) {
+		// TODO Auto-generated method stub
+		return trafficAnalysisDao.gettraffic(rp);
+	}
+
+	public String getCount() {
+		// TODO Auto-generated method stub
+		return trafficAnalysisDao.getCount();
 	}
 
 }

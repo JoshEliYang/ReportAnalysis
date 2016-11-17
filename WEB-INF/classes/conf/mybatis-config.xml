@@ -8,6 +8,7 @@ PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
          <typeAlias alias="User" type="cn.springmvc.model.User"/> 
          <typeAlias alias="PriceTag" type="cn.springmvc.model.PriceTag"/>
          <typeAlias alias="Goods" type="cn.springmvc.model.Goods"/>
+         <typeAlias alias="PaginationParams" type="cn.springmvc.model.PaginationParams"/>
     </typeAliases>
 
     <!-- 映射map -->

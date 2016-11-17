@@ -11,6 +11,7 @@ import com.alibaba.fastjson.JSON;
 import com.springmvc.utils.MemcacheUtil;
 
 import cn.springmvc.ReportDAO.DailySalesDAO;
+import cn.springmvc.model.DailyReportParams;
 import cn.springmvc.model.DailySalesAnalysis;
 import cn.springmvc.service.SalesDataService;
 
@@ -30,7 +31,7 @@ public class SalesDataServiceImpl implements SalesDataService {
 	public List<DailySalesAnalysis> selectSalesData() {
 		MemcacheUtil memcache = null;
 		List<DailySalesAnalysis> resList = null;
-
+		
 		try {
 			memcache = MemcacheUtil.getInstance();
 			String res = memcache.getDat("AllSalesData", String.class);
@@ -109,4 +110,25 @@ public class SalesDataServiceImpl implements SalesDataService {
 		return resList;
 	}
 
+	public List<DailySalesAnalysis> selectAllSalesDataReport(
+			DailyReportParams rp) {
+		// TODO Auto-generated method stub
+		return dao.selectAllSalesDataReport(rp);
+	}
+
+	public String selectAllSalesDataReportCount() {
+		// TODO Auto-generated method stub
+		return dao.selectAllSalesDataReportCount();
+	}
+	
+	
+	public List<DailySalesAnalysis> selectAllSalesDataReport2015(DailyReportParams rp) {
+		// TODO Auto-generated method stub
+		return dao.selectAllSalesDataReport2015(rp);
+	}
+
+	public String selectAllSalesDataReportCount2015() {
+		// TODO Auto-generated method stub
+		return dao.selectAllSalesDataReportCount2015();
+	}
 }

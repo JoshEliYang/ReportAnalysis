@@ -7,4 +7,14 @@
 				<select id="selectAllTrafficAnalysis" resultType="LastYearTrafficAnalysis">
 					SELECT * FROM v_last_year_user_traffic_view;
 				</select>
+				
+				
+				<select id="gettraffic" parameterType="DailyReportParams"  resultType="LastYearTrafficAnalysis">
+					SELECT * FROM v_last_year_user_traffic_view LIMIT #{limit} OFFSET #{offset};
+				</select>
+				
+				<select id="getCount" resultType="String">
+					SELECT count(*) FROM v_last_year_user_traffic_view;
+				</select>
+				
 </mapper>

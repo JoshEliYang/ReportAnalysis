@@ -7,10 +7,13 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import cn.springmvc.model.DailyReportParams;
+import cn.springmvc.model.DailySalesAnalysis;
 import cn.springmvc.model.ThisYearTrafficAnalysis;
 import cn.springmvc.service.ThisYearTrafficAnalysisService;
 
@@ -43,5 +46,37 @@ public class ThisYearTrafficAnalysisController {
 
 		logger.error("selectAllTrafficData contorller error >>> ");
 		return HttpUtils.generateResponse("1", "请求失败", null);
+	}
+	
+	@ResponseBody
+	@RequestMapping(value = "/traffic2016",method = RequestMethod.POST)
+	public Map<String,Object> getTrafficReport2016(@RequestBody DailyReportParams rp){
+		List<DailySalesAnalysis> list = null;
+		String trafficCount = null;
+		list = thisYearTrafficAnalysisService.selecttraffic(rp);
+		trafficCount = thisYearTrafficAnalysisService.getCount();
+		
+		if (list != null) {
+			return HttpUtils.generateResponseFour("0", "请求成功", list,trafficCount);
+		}	
+
+		logger.error("getAllSalesData2016 contorller error >>> ");
+		return HttpUtils.generateResponse("-1", "查询失败", null);
+	}
+	
+	@ResponseBody
+	@RequestMapping(value = "/traffic2015",method = RequestMethod.POST)
+	public Map<String,Object> getTrafficReport2015(@RequestBody DailyReportParams rp){
+		List<DailySalesAnalysis> list = null;
+		String trafficCount = null;
+		list = thisYearTrafficAnalysisService.selecttraffic2(rp);
+		trafficCount = thisYearTrafficAnalysisService.getCount2();
+		
+		if (list != null) {
+			return HttpUtils.generateResponseFour("0", "请求成功", list,trafficCount);
+		}	
+
+		logger.error("getAllSalesData2016 contorller error >>> ");
+		return HttpUtils.generateResponse("-1", "查询失败", null);
 	}
 }

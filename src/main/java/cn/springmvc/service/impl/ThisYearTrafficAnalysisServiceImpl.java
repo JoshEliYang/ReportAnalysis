@@ -11,6 +11,8 @@ import com.alibaba.fastjson.JSON;
 import com.springmvc.utils.MemcacheUtil;
 
 import cn.springmvc.ReportDAO.ThisYearTrafficAnalysisDAO;
+import cn.springmvc.model.DailyReportParams;
+import cn.springmvc.model.DailySalesAnalysis;
 import cn.springmvc.model.ThisYearTrafficAnalysis;
 import cn.springmvc.service.ThisYearTrafficAnalysisService;
 
@@ -67,4 +69,24 @@ public class ThisYearTrafficAnalysisServiceImpl implements ThisYearTrafficAnalys
 		return resList;
 	}
 
+	public List<DailySalesAnalysis> selecttraffic(DailyReportParams rp) {
+		// TODO Auto-generated method stub
+		return thisYearTrafficAnalysisDAO.gettraffic(rp);
+	}
+
+	public String getCount() {
+		// TODO Auto-generated method stub
+		return thisYearTrafficAnalysisDAO.getCount();
+	}
+
+	public List<DailySalesAnalysis> selecttraffic2(DailyReportParams rp) {
+		// TODO Auto-generated method stub
+		return thisYearTrafficAnalysisDAO.gettraffic2(rp);
+	}
+
+	public String getCount2() {
+		// TODO Auto-generated method stub
+		return thisYearTrafficAnalysisDAO.getCount2();
+	}
+	
 }
