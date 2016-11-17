@@ -27,4 +27,8 @@ public interface UserAnalysisService {
 
 	// 获得无效用户数量
 	public int getNumOfUserAnalysisInvalid();
+
+	public String getvalidCount();
+
+	public String getinvalidCount();
 }

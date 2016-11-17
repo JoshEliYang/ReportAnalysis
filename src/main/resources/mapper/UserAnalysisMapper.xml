@@ -105,4 +105,13 @@
 					from 
 						v_user_no_expense_record
 				</select>
+				
+				
+				<select id="getvalidCount" resultType="String">
+				 	select count(*) from v_user_with_expense_record;
+				</select>
+				
+				<select id="getinvalidCount" resultType="String">
+					select count(*) from v_user_no_expense_record;
+				</select>
 </mapper>

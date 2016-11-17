@@ -7,12 +7,15 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.springmvc.utils.HttpUtils;
 
+import cn.springmvc.model.DailyReportParams;
+import cn.springmvc.model.DailySalesAnalysis;
 import cn.springmvc.model.LastYearTrafficAnalysis;
 import cn.springmvc.service.impl.LastYearTrafficAnalysisServiceImpl;
 
@@ -51,4 +54,21 @@ public class LastYearTrafficAnalysisController {
 		logger.error("selectAllTrafficData controller error >>> ");
 		return HttpUtils.generateResponse("-1", "查询失败", null);
 	}
+	
+	@ResponseBody
+	@RequestMapping(value = "/traffic2015",method = RequestMethod.POST)
+	public Map<String,Object> getTrafficReport2016(@RequestBody DailyReportParams rp){
+		List<DailySalesAnalysis> list = null;
+		String trafficCount = null;
+		list = trafficAnalysisService.selecttraffic(rp);
+		trafficCount = trafficAnalysisService.getCount();
+		
+		if (list != null) {
+			return HttpUtils.generateResponseFour("0", "请求成功", list,trafficCount);
+		}	
+
+		logger.error("getAllSalesData2016 contorller error >>> ");
+		return HttpUtils.generateResponse("-1", "查询失败", null);
+	}
+	
 }

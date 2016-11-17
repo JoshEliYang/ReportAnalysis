@@ -11,4 +11,19 @@
 	<select id="selectAllSalesData2016" resultType="DailySalesAnalysis">
 		SELECT * FROM v_daily_sales_info_2016;
 	</select>
+	
+	<select id="selectAllSalesDataReport" parameterType="DailyReportParams" resultType="DailySalesAnalysis">
+		SELECT * FROM v_daily_sales_info_2016 LIMIT #{limit} OFFSET #{offset};
+	</select>
+	<select id="selectAllSalesDataReportCount" resultType="String">
+		SELECT count(*) FROM v_daily_sales_info_2016;
+	</select>
+	
+	
+	<select id="selectAllSalesDataReport2015" parameterType="DailyReportParams" resultType="DailySalesAnalysis">
+		SELECT * FROM v_daily_sales_info LIMIT #{limit} OFFSET #{offset};
+	</select>
+	<select id="selectAllSalesDataReportCount2015" resultType="String">
+		SELECT count(*) FROM v_daily_sales_info;
+	</select>
 </mapper>

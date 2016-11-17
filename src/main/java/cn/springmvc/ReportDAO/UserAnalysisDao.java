@@ -10,6 +10,7 @@ import cn.springmvc.model.UserAnalysis;
  *
  */
 public interface UserAnalysisDao {
+
 	// 获得用户分析报表--有消费记录
 	public List<UserAnalysis> getUerAnalysisWithExpenseRecord() throws Exception;
 
@@ -27,4 +28,10 @@ public interface UserAnalysisDao {
 
 	// 获得无效用户数量
 	public int getNumOfUserAnalysisInvalid() throws Exception;
+
+	public String getvalidCount();
+	
+	public String getinvalidCount();
+	
+	
 }

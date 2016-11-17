@@ -11,6 +11,8 @@ PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
     	 <typeAlias alias="SaleTopAnalysis" type="cn.springmvc.model.SaleTopAnalysis"/>
     	 <typeAlias alias="UserAnalysis" type="cn.springmvc.model.UserAnalysis"/>
     	 <typeAlias alias="Order" type="cn.springmvc.model.Order"/>
+    	 <typeAlias alias="PaginationParams" type="cn.springmvc.model.PaginationParams"/>
+    	 <typeAlias alias="DailyReportParams" type="cn.springmvc.model.DailyReportParams"/>
     </typeAliases>
 
     <!-- 映射map -->

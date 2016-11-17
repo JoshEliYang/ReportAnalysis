@@ -7,4 +7,12 @@
 				<select id="selectAllSaleTopData" resultType="SaleTopAnalysis">
 					SELECT * FROM v_top_sales_view;
 				</select>
+				
+				<select id="selectAllSaleTopData2" parameterType="PaginationParams"  resultType="SaleTopAnalysis">
+					SELECT * FROM v_top_sales_view LIMIT #{limit} OFFSET #{offset};
+				</select>
+				
+				<select id="selectAllSaleTopCount"  resultType="String">
+					SELECT count(*) FROM v_top_sales_view;
+				</select>
 </mapper>
