@@ -8,7 +8,7 @@
 		resultType="PaymentSerialNumber">
 		SELECT
 		a.pay_order_create_time,
-		a.order_no,
+		b.order_no,
 		a.out_trade_no,
 		a.pay_order_fee,
 		b.STORE_NAME,
