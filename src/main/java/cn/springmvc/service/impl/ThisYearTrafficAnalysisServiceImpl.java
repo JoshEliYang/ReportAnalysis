@@ -28,6 +28,9 @@ public class ThisYearTrafficAnalysisServiceImpl implements ThisYearTrafficAnalys
 
 	Logger logger = Logger.getLogger(ThisYearTrafficAnalysisServiceImpl.class);
 
+	/**
+	 * Abandoned !! Don't request it again!!
+	 */
 	public List<ThisYearTrafficAnalysis> selectAllTrafficAnalysisData() {
 		MemcacheUtil memcache = null;
 		List<ThisYearTrafficAnalysis> resList = null;
@@ -70,23 +73,95 @@ public class ThisYearTrafficAnalysisServiceImpl implements ThisYearTrafficAnalys
 	}
 
 	public List<DailySalesAnalysis> selecttraffic(DailyReportParams rp) {
-		// TODO Auto-generated method stub
-		return thisYearTrafficAnalysisDAO.gettraffic(rp);
+		String key = "TrafficAnalysis2016_" + rp.getOffset() + "_" + rp.getLimit();
+		MemcacheUtil memcache = null;
+		List<DailySalesAnalysis> res = null;
+		try {
+			memcache = MemcacheUtil.getInstance();
+			String jsonStr = memcache.getDat(key, String.class);
+
+			if (jsonStr != null) {
+				res = JSON.parseArray(jsonStr, DailySalesAnalysis.class);
+				logger.error(key + " get from cache success");
+			} else {
+				logger.error(key + " get from cache failed");
+				res = thisYearTrafficAnalysisDAO.gettraffic(rp);
+				memcache.setDat(key, JSON.toJSONString(res));
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+			logger.error("error occurred when get cache key >>>> " + key + " error: >>>>" + e.getMessage());
+		}
+		return res;
 	}
 
 	public String getCount() {
-		// TODO Auto-generated method stub
-		return thisYearTrafficAnalysisDAO.getCount();
+		String key = "TrafficAnalysis2016_num";
+		MemcacheUtil memcache = null;
+		int num = 0;
+		try {
+			memcache = MemcacheUtil.getInstance();
+			String jsonStr = memcache.getDat(key, String.class);
+
+			if (jsonStr != null) {
+				num = (Integer) JSON.parse(jsonStr);
+				logger.error(key + " get from cache success");
+			} else {
+				logger.error(key + " get from cache failed");
+				num = Integer.parseInt(thisYearTrafficAnalysisDAO.getCount());
+				memcache.setDat(key, JSON.toJSONString(num));
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+			logger.error("error occurred when get cache key >>>> " + key + " error: >>>>" + e.getMessage());
+		}
+		return String.valueOf(num);
 	}
 
 	public List<DailySalesAnalysis> selecttraffic2(DailyReportParams rp) {
-		// TODO Auto-generated method stub
-		return thisYearTrafficAnalysisDAO.gettraffic2(rp);
+		String key = "TrafficAnalysis2015_" + rp.getOffset() + "_" + rp.getLimit();
+		MemcacheUtil memcache = null;
+		List<DailySalesAnalysis> res = null;
+		try {
+			memcache = MemcacheUtil.getInstance();
+			String jsonStr = memcache.getDat(key, String.class);
+
+			if (jsonStr != null) {
+				res = JSON.parseArray(jsonStr, DailySalesAnalysis.class);
+				logger.error(key + " get from cache success");
+			} else {
+				logger.error(key + " get from cache failed");
+				res = thisYearTrafficAnalysisDAO.gettraffic2(rp);
+				memcache.setDat(key, res);
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+			logger.error("error occurred when get cache key >>>> " + key + " error: >>>>" + e.getMessage());
+		}
+		return res;
 	}
 
 	public String getCount2() {
-		// TODO Auto-generated method stub
-		return thisYearTrafficAnalysisDAO.getCount2();
+		String key = "TrafficAnalysis2015_num";
+		MemcacheUtil memcache = null;
+		int num = 0;
+		try {
+			memcache = MemcacheUtil.getInstance();
+			String jsonStr = memcache.getDat(key, String.class);
+
+			if (jsonStr != null) {
+				num = (Integer) JSON.parse(jsonStr);
+				logger.error(key + " get from cache success");
+			} else {
+				logger.error(key + " get from cache failed");
+				num = Integer.parseInt(thisYearTrafficAnalysisDAO.getCount2());
+				memcache.setDat(key, JSON.toJSONString(num));
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+			logger.error("error occurred when get cache key >>>> " + key + " error: >>>>" + e.getMessage());
+		}
+		return String.valueOf(num);
 	}
-	
+
 }

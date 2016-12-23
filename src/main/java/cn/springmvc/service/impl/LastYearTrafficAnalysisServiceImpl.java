@@ -28,6 +28,9 @@ public class LastYearTrafficAnalysisServiceImpl implements LastYearTrafficAnalys
 
 	Logger logger = Logger.getLogger(LastYearTrafficAnalysisServiceImpl.class);
 
+	/**
+	 * Abandoned !! Don't request it again!!
+	 */
 	public List<LastYearTrafficAnalysis> selectAllTrafficAnalysisData() {
 
 		MemcacheUtil memcache = null;
@@ -84,13 +87,49 @@ public class LastYearTrafficAnalysisServiceImpl implements LastYearTrafficAnalys
 	}
 
 	public List<DailySalesAnalysis> selecttraffic(DailyReportParams rp) {
-		// TODO Auto-generated method stub
-		return trafficAnalysisDao.gettraffic(rp);
+		String key = "TrafficAnalysis2015_" + rp.getOffset() + "_" + rp.getLimit();
+		MemcacheUtil memcache = null;
+		List<DailySalesAnalysis> res = null;
+		try {
+			memcache = MemcacheUtil.getInstance();
+			String jsonStr = memcache.getDat(key, String.class);
+
+			if (jsonStr != null) {
+				res = JSON.parseArray(jsonStr, DailySalesAnalysis.class);
+				logger.error(key + " get from cache success");
+			} else {
+				logger.error(key + " get from cache failed");
+				res = trafficAnalysisDao.gettraffic(rp);
+				memcache.setDat(key, JSON.toJSONString(res));
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+			logger.error("error occurred when get cache key >>>> " + key + " error: >>>>" + e.getMessage());
+		}
+		return res;
 	}
 
 	public String getCount() {
-		// TODO Auto-generated method stub
-		return trafficAnalysisDao.getCount();
+		String key = "TrafficAnalysis2015_num";
+		MemcacheUtil memcache = null;
+		int num = 0;
+		try {
+			memcache = MemcacheUtil.getInstance();
+			String jsonStr = memcache.getDat(key, String.class);
+
+			if (jsonStr != null) {
+				num = (Integer) JSON.parse(jsonStr);
+				logger.error(key + " get from cache success");
+			} else {
+				logger.error(key + " get from cache failed");
+				num = Integer.parseInt(trafficAnalysisDao.getCount());
+				memcache.setDat(key, JSON.toJSONString(num));
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+			logger.error("error occurred when get cache key >>>> " + key + " error: >>>>" + e.getMessage());
+		}
+		return String.valueOf(num);
 	}
 
 }

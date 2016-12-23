@@ -28,6 +28,9 @@ public class SaleTopAnalysisServiceImpl implements SaleTopAnalysisService {
 
 	Logger logger = Logger.getLogger(SaleTopAnalysisServiceImpl.class);
 
+	/**
+	 * Abandoned !! Don't request it again!!
+	 */
 	public List<SaleTopAnalysis> selectAllSaleTopData() {
 		MemcacheUtil memcache = null;
 		List<SaleTopAnalysis> resList = null;
@@ -72,13 +75,43 @@ public class SaleTopAnalysisServiceImpl implements SaleTopAnalysisService {
 	}
 
 	public List<SaleTopAnalysis> selectAllSaleTopData2(PaginationParams rp) throws Exception {
-		// TODO Auto-generated method stub
-		return saleTopAnalysisdao.selectAllSaleTopData2(rp);
+		String key = "SalesTop_" + rp.getOffset() + "_" + rp.getLimit();
+		List<SaleTopAnalysis> res = null;
+		MemcacheUtil memcache = MemcacheUtil.getInstance();
+		String jsonStr = memcache.getDat(key, String.class);
+
+		if (jsonStr != null) {
+			res = JSON.parseArray(jsonStr, SaleTopAnalysis.class);
+			logger.error(key + " get from cache success");
+		} else {
+			logger.error(key + " get from cache failed");
+			res = saleTopAnalysisdao.selectAllSaleTopData2(rp);
+			memcache.setDat(key, JSON.toJSONString(res));
+		}
+		return res;
 	}
 
 	public String selectAllSaleTopCount() {
-		// TODO Auto-generated method stub
-		return saleTopAnalysisdao.selectAllSaleTopCount();
+		String key = "SalesTop";
+		MemcacheUtil memcache = null;
+		int num = 0;
+		try {
+			memcache = MemcacheUtil.getInstance();
+			String jsonStr = memcache.getDat(key, String.class);
+
+			if (jsonStr != null) {
+				num = (Integer) JSON.parse(jsonStr);
+				logger.error(key + " get from cache success");
+			} else {
+				logger.error(key + " get from cache failed");
+				num = Integer.parseInt(saleTopAnalysisdao.selectAllSaleTopCount());
+				memcache.setDat(key, JSON.toJSONString(num));
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+			logger.error("error occurred when get cache key >>>> " + key + " error: >>>>" + e.getMessage());
+		}
+		return String.valueOf(num);
 	}
 
 }

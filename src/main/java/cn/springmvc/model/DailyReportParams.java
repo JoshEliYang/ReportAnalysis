@@ -2,7 +2,7 @@ package cn.springmvc.model;
 
 import java.io.Serializable;
 
-public class DailyReportParams implements Serializable{
+public class DailyReportParams implements Serializable {
 
 	/**
 	 * 
@@ -14,7 +14,7 @@ public class DailyReportParams implements Serializable{
 	private int offset;
 
 	private int year;
-	
+
 	public int getYear() {
 		return year;
 	}
@@ -41,8 +41,7 @@ public class DailyReportParams implements Serializable{
 
 	@Override
 	public String toString() {
-		return "DailyReportParams [limit=" + limit + ", offset=" + offset
-				+ ", year=" + year + "]";
+		return "DailyReportParams [limit=" + limit + ", offset=" + offset + ", year=" + year + "]";
 	}
 
 	public DailyReportParams(int limit, int offset, int year) {
@@ -55,7 +54,5 @@ public class DailyReportParams implements Serializable{
 	public DailyReportParams() {
 		super();
 	}
-
-
 
 }

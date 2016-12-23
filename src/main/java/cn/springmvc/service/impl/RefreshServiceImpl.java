@@ -2,6 +2,8 @@ package cn.springmvc.service.impl;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,8 +17,9 @@ import cn.springmvc.ReportDAO.LastYearTrafficAnalysisDAO;
 import cn.springmvc.ReportDAO.SaleTopAnalysisDAO;
 import cn.springmvc.ReportDAO.ThisYearTrafficAnalysisDAO;
 import cn.springmvc.ReportDAO.UserAnalysisDao;
+import cn.springmvc.model.DailyReportParams;
 import cn.springmvc.model.DailySalesAnalysis;
-import cn.springmvc.model.LastYearTrafficAnalysis;
+import cn.springmvc.model.PaginationParams;
 import cn.springmvc.model.SaleTopAnalysis;
 import cn.springmvc.model.ThisYearTrafficAnalysis;
 import cn.springmvc.model.UserAnalysis;
@@ -42,478 +45,352 @@ public class RefreshServiceImpl implements RefreshService {
 	@Autowired
 	public UserAnalysisDao userDao;
 
+	public static ExecutorService pool = Executors.newFixedThreadPool(20);
+
 	Logger logger = Logger.getLogger(RefreshServiceImpl.class);
 
 	public void refreshMemcache() {
-
 		logger.error("start to refresh memcache ...");
 
-		// 日常经营分析 --2016
-		DailySales2016();
-		// 日常经营分析--2015
-		DailySales();
-		// 16年流量分析
-		ThisYearTrafficAnalysis();
-		// 15年流量分析
-		LastYearTrafficAnalysis();
-		// 销售TOP分析15年
-		SaleTopAnalysis();
-
-		/**
-		 * 获得有效用户
-		 */
-		int validNum = UserValidNum(); // 有效用户数量
-		int offset = 500;
-		int maxPage = (int) Math.ceil(validNum * 1.0 / offset) - 1;
-		for (int i = 0; i <= maxPage; i++) {
-			UserValidAnalysis(i * offset, offset); // 缓存每个有效数据分页
-		}
-		AllUserValidAnalysis(); // 缓存所有所有有效数据
-
-		/**
-		 * 获得无效用户
-		 */
-		int InvalidNum = UserInvalidNum(); // 无效用户数量
-		int INoffset = 500;
-		int INmaxPage = (int) Math.ceil(InvalidNum * 1.0 / INoffset) - 1;
-		for (int i = 0; i < INmaxPage; i++) {
-			UserInvalidAnalysis(i * INoffset, INoffset); // 缓存每个无效数据分页
-		}
-		AllUserInvalidAnalysis(); // 缓存所有无效用户数据
+		pool.execute(new Thread(new queryHandler(method_type.dailySalesRefresh16, 0, 0)));
+		pool.execute(new Thread(new queryHandler(method_type.dailySalesRefresh15, 0, 0)));
+		pool.execute(new Thread(new queryHandler(method_type.trafficAnalysisRefresh16, 0, 0)));
+		pool.execute(new Thread(new queryHandler(method_type.trafficAnalysisRefresh15, 0, 0)));
+		pool.execute(new Thread(new queryHandler(method_type.salesTopRefresh, 0, 0)));
+		pool.execute(new Thread(new queryHandler(method_type.UserValidRefresh, 0, 0)));
+		pool.execute(new Thread(new queryHandler(method_type.UserInvalidRefresh, 0, 0)));
 
 		logger.error("refresh memcache finished ...");
 	}
 
-	/**
-	 * 刷新所有流量数据
-	 */
-	void LastYearTrafficAnalysis() {
-		// 获得bean --> 所有流量数据的DAO
-		// LastYearTrafficAnalysisDAO trafficAnalysisDao =
-		// context.getBean(LastYearTrafficAnalysisDAO.class);
-		List<LastYearTrafficAnalysis> resList = null;
-		String outStr = null;
+	enum method_type {
+		dailySalesRefresh16, dailySalesRefresh15, trafficAnalysisRefresh16, trafficAnalysisRefresh15, salesTopRefresh, UserValidRefresh, UserInvalidRefresh,
 
-		try {
-			resList = trafficAnalysisDao.selectAllTrafficAnalysis();
-			outStr = JSON.toJSONString(resList);
-		} catch (Exception e1) {
-			e1.printStackTrace();
-			logger.error("get Dao error >>> " + e1.getMessage());
-			return;
-		}
-		// RedisUtil redis = RedisUtil.getRedis();
-		// redis.setdat("AllTrafficAnalysisData", outStr);
-		// redis.destroy();
-
-		MemcacheUtil memcache = null;
-		try {
-			memcache = MemcacheUtil.getInstance();
-			memcache.setDat("AllTrafficAnalysisData", outStr);
-			logger.error("insert AllTrafficAnalysisData >>>> \n" + outStr);
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error("memcache insert error >>> " + e.getMessage());
-		} finally {
-			try {
-				memcache.destory();
-			} catch (IOException e) {
-				e.printStackTrace();
-				logger.error("memcache close error >>> " + e.getMessage());
-			}
-		}
-
+		dailySales15, dailySales16, trafficAnalysis15, trafficAnalysis16, salesTop, UserValid, UserInvalid
 	}
 
-	/**
-	 * 刷新所有销售数据
-	 */
-	void DailySales() {
-		// 获得bean
-		// DailySalesDAO dao = context.getBean(DailySalesDAO.class);
-		List<DailySalesAnalysis> resList;
-		String outStr = null;
-		try {
-			resList = dao.selectAllSalesData();
-			outStr = JSON.toJSONString(resList);
-		} catch (Exception e1) {
-			e1.printStackTrace();
-			logger.error("get Dao error >>> " + e1.getMessage());
-			return;
-		}
-		// RedisUtil redis = RedisUtil.getRedis();
-		// redis.setdat("AllSalesData", outStr);
-		// redis.destroy();
+	class queryHandler implements Runnable {
+		private method_type method;
+		int offset;
+		int count;
 
-		MemcacheUtil memcache = null;
-		try {
-			memcache = MemcacheUtil.getInstance();
-			memcache.setDat("AllSalesData", outStr);
-			logger.error("insert AllSalesData >>>> \n" + outStr);
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error("memcache insert error >>> " + e.getMessage());
-		} finally {
+		public queryHandler(method_type method, int offset, int count) {
+			this.method = method;
+			this.offset = offset;
+			this.count = count;
+		}
+
+		public void run() {
 			try {
-				memcache.destory();
-			} catch (IOException e) {
+				if (method == method_type.dailySalesRefresh16) {
+					dailySalesRefresh(2016);
+				} else if (method == method_type.dailySalesRefresh15) {
+					dailySalesRefresh(2015);
+				} else if (method == method_type.trafficAnalysisRefresh16) {
+					trafficAnalysisRefresh(2016);
+				} else if (method == method_type.trafficAnalysisRefresh15) {
+					trafficAnalysisRefresh(2015);
+				} else if (method == method_type.salesTopRefresh) {
+					salesTopRefresh();
+				} else if (method == method_type.UserValidRefresh) {
+					UserValidRefresh();
+				} else if (method == method_type.UserInvalidRefresh) {
+					UserInvalidRefresh();
+				}
+
+				if (method == method_type.dailySales15) {
+					DailySales(new DailyReportParams(count, offset, 2015));
+				} else if (method == method_type.dailySales16) {
+					DailySales(new DailyReportParams(count, offset, 2016));
+				}
+				if (method == method_type.trafficAnalysis16) {
+					trafficAnalysis(new DailyReportParams(count, offset, 2016));
+				} else if (method == method_type.trafficAnalysis15) {
+					trafficAnalysis(new DailyReportParams(count, offset, 2015));
+				}
+				if (method == method_type.salesTop) {
+					salesTop(new PaginationParams(count, offset));
+				}
+				if (method == method_type.UserValid) {
+					UserValid(offset, count);
+				} else if (method == method_type.UserInvalid) {
+					UserInvalid(offset, count);
+				}
+
+			} catch (Exception e) {
 				e.printStackTrace();
-				logger.error("memcache close error >>> " + e.getMessage());
-			}
-		}
-	}
-
-	/**
-	 * 刷新所有销售数据 2016
-	 */
-	void DailySales2016() {
-		// 获得bean
-		// DailySalesDAO dao = context.getBean(DailySalesDAO.class);
-		List<DailySalesAnalysis> resList;
-		String outStr = null;
-		try {
-			resList = dao.selectAllSalesData2016();
-			outStr = JSON.toJSONString(resList);
-		} catch (Exception e1) {
-			e1.printStackTrace();
-			logger.error("get Dao error >>> " + e1.getMessage());
-			return;
-		}
-		// RedisUtil redis = RedisUtil.getRedis();
-		// redis.setdat("AllSalesData2016", outStr);
-		// redis.destroy();
-
-		MemcacheUtil memcache = null;
-		try {
-			memcache = MemcacheUtil.getInstance();
-			memcache.setDat("AllSalesData2016", outStr);
-			logger.error("insert AllSalesData2016 >>>> \n" + outStr);
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error("memcache insert error >>> " + e.getMessage());
-		} finally {
-			try {
-				memcache.destory();
-			} catch (IOException e) {
-				e.printStackTrace();
-				logger.error("memcache close error >>> " + e.getMessage());
-			}
-		}
-	}
-
-	/**
-	 * 刷新销售top数据
-	 */
-	void SaleTopAnalysis() {
-		// SaleTopAnalysisDAO saleTopAnalysisdao =
-		// context.getBean(SaleTopAnalysisDAO.class);
-		List<SaleTopAnalysis> resList;
-		String outStr = null;
-
-		try {
-			resList = saleTopAnalysisdao.selectAllSaleTopData();
-			outStr = JSON.toJSONString(resList);
-		} catch (Exception e1) {
-			e1.printStackTrace();
-			logger.error("get Dao error >>> " + e1.getMessage());
-			return;
-		}
-		// RedisUtil redis = RedisUtil.getRedis();
-		// redis.setdat("AllSaleTopData", outStr);
-		// redis.destroy();
-
-		MemcacheUtil memcache = null;
-		try {
-			memcache = MemcacheUtil.getInstance();
-			memcache.setDat("AllSaleTopData", outStr);
-			logger.error("insert AllSaleTopData >>>> \n" + outStr);
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error("memcache insert error >>> " + e.getMessage());
-		} finally {
-			try {
-				memcache.destory();
-			} catch (IOException e) {
-				e.printStackTrace();
-				logger.error("memcache close error >>> " + e.getMessage());
-			}
-		}
-	}
-
-	/**
-	 * 刷新当年流量数据
-	 */
-	void ThisYearTrafficAnalysis() {
-		// ThisYearTrafficAnalysisDAO thisYearTrafficAnalysisDAO =
-		// context.getBean(ThisYearTrafficAnalysisDAO.class);
-		List<ThisYearTrafficAnalysis> resList = null;
-		String outStr = null;
-		try {
-			resList = thisYearTrafficAnalysisDAO.selectAllTrafficAnalysis();
-			outStr = JSON.toJSONString(resList);
-		} catch (Exception e1) {
-			e1.printStackTrace();
-			logger.error("get Dao error >>> " + e1.getMessage());
-			return;
-		}
-		// RedisUtil redis = RedisUtil.getRedis();
-		// redis.setdat("ThisYearAllTrafficAnalysis", outStr);
-		// redis.destroy();
-
-		MemcacheUtil memcache = null;
-		try {
-			memcache = MemcacheUtil.getInstance();
-			memcache.setDat("ThisYearAllTrafficAnalysis", outStr);
-			logger.error("insert ThisYearAllTrafficAnalysis >>>> \n" + outStr);
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error("memcache insert error >>> " + e.getMessage());
-		} finally {
-			try {
-				memcache.destory();
-			} catch (IOException e) {
-				e.printStackTrace();
-				logger.error("memcache close error >>> " + e.getMessage());
-			}
-		}
-	}
-
-	/**
-	 * 有效用户数量
-	 * 
-	 * @return
-	 */
-	int UserValidNum() {
-		String Key = "UserValidNum";
-		// UserAnalysisDao userDao = context.getBean(UserAnalysisDao.class);
-		int resDat = 0;
-		try {
-			resDat = userDao.getNumOfUserAnalysisValid();
-		} catch (Exception e1) {
-			e1.printStackTrace();
-			logger.error("get Dao error >>> " + e1.getMessage());
-			return 0;
-		}
-		// RedisUtil redis = RedisUtil.getRedis();
-		// redis.setdat(Key, String.valueOf(resDat));
-		// redis.destroy();
-
-		MemcacheUtil memcache = null;
-		try {
-			memcache = MemcacheUtil.getInstance();
-			memcache.setDat(Key, String.valueOf(resDat));
-			logger.error("insert " + Key + " >>>> \n" + String.valueOf(resDat));
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error("memcache insert error >>> " + e.getMessage());
-		} finally {
-			try {
-				memcache.destory();
-			} catch (IOException e) {
-				e.printStackTrace();
-				logger.error("memcache close error >>> " + e.getMessage());
+				logger.error("refresh error occurred! >>>> " + e.getMessage());
 			}
 		}
 
-		return resDat;
-	}
-
-	/**
-	 * 有效用户分析数据（分页）
-	 * 
-	 * @param st
-	 * @param offset
-	 */
-	void UserValidAnalysis(int st, int offset) {
-		String Key = "UserValidFrom" + st + "To" + offset;
-		// UserAnalysisDao userDao = context.getBean(UserAnalysisDao.class);
-		List<UserAnalysis> resList = null;
-		String outStr = null;
-		try {
-			resList = userDao.getUserAnalysisWithExpenseRecordPage(st, offset);
-			outStr = JSON.toJSONString(resList);
-		} catch (Exception e1) {
-			e1.printStackTrace();
-			logger.error("get Dao error >>> " + e1.getMessage());
-			return;
-		}
-		// RedisUtil redis = RedisUtil.getRedis();
-		// redis.setdat(Key, outStr);
-		// redis.destroy();
-
-		MemcacheUtil memcache = null;
-		try {
-			memcache = MemcacheUtil.getInstance();
-			memcache.setDat(Key, outStr);
-			logger.error("insert " + Key + " >>>> \n" + outStr);
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error("memcache insert error >>> " + e.getMessage());
-		} finally {
-			try {
-				memcache.destory();
-			} catch (IOException e) {
-				e.printStackTrace();
-				logger.error("memcache close error >>> " + e.getMessage());
-			}
-		}
-	}
-
-	/**
-	 * 有效用户分析数据--全部
-	 */
-	void AllUserValidAnalysis() {
-		String Key = "UerAnalysisWithExpenseRecord";
-		// UserAnalysisDao userDao = context.getBean(UserAnalysisDao.class);
-		List<UserAnalysis> resList = null;
-		String outStr = null;
-
-		try {
-			resList = userDao.getUerAnalysisWithExpenseRecord();
-			outStr = JSON.toJSONString(resList);
-		} catch (Exception e1) {
-			e1.printStackTrace();
-			logger.error("get Dao error >>> " + e1.getMessage());
-			return;
-		}
-		// RedisUtil redis = RedisUtil.getRedis();
-		// redis.setdat(Key, outStr);
-		// redis.destroy();
-
-		MemcacheUtil memcache = null;
-		try {
-			memcache = MemcacheUtil.getInstance();
-			memcache.setDat(Key, outStr);
-			logger.error("insert " + Key + " >>>> \n" + outStr);
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error("memcache insert error >>> " + e.getMessage());
-		} finally {
-			try {
-				memcache.destory();
-			} catch (IOException e) {
-				e.printStackTrace();
-				logger.error("memcache close error >>> " + e.getMessage());
-			}
-		}
-	}
-
-	/**
-	 * 无效用户数量
-	 * 
-	 * @return
-	 */
-	int UserInvalidNum() {
-		String Key = "UserInvalidNum";
-		// UserAnalysisDao userDao = context.getBean(UserAnalysisDao.class);
-		int resDat = 0;
-		try {
-			resDat = userDao.getNumOfUserAnalysisInvalid();
-		} catch (Exception e1) {
-			e1.printStackTrace();
-			logger.error("get Dao error >>> " + e1.getMessage());
-			return 0;
-		}
-		// RedisUtil redis = RedisUtil.getRedis();
-		// redis.setdat(Key, String.valueOf(resDat));
-		// redis.destroy();
-
-		MemcacheUtil memcache = null;
-		try {
-			memcache = MemcacheUtil.getInstance();
-			memcache.setDat(Key, String.valueOf(resDat));
-			logger.error("insert " + Key + " >>>> \n" + String.valueOf(resDat));
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error("memcache insert error >>> " + e.getMessage());
-		} finally {
-			try {
-				memcache.destory();
-			} catch (IOException e) {
-				e.printStackTrace();
-				logger.error("memcache close error >>> " + e.getMessage());
+		/**
+		 * 刷新日常销售所有数据
+		 * 
+		 * @param year
+		 * @throws Exception
+		 */
+		public void dailySalesRefresh(int year) throws Exception {
+			int total = DailySales(year);
+			int count = 100;
+			for (int i = 0; total > i * count; i++) {
+				Thread thread = null;
+				if (year == 2016)
+					thread = new Thread(new queryHandler(method_type.dailySales16, i * count, count));
+				else if (year == 2015)
+					thread = new Thread(new queryHandler(method_type.dailySales15, i * count, count));
+				pool.execute(thread);
 			}
 		}
 
-		return resDat;
-	}
-
-	/**
-	 * 无效用户分析数据（分页）
-	 * 
-	 * @param st
-	 * @param offset
-	 */
-	void UserInvalidAnalysis(int st, int offset) {
-		String Key = "UserInvalidFrom" + st + "To" + offset;
-		// UserAnalysisDao userDao = context.getBean(UserAnalysisDao.class);
-		List<UserAnalysis> resList = null;
-		String outStr = null;
-		try {
-			resList = userDao.getUserAnalysisNoExpenseRecordPage(st, offset);
-			outStr = JSON.toJSONString(resList);
-		} catch (Exception e1) {
-			e1.printStackTrace();
-			logger.error("get Dao error >>> " + e1.getMessage());
-			return;
-		}
-		// RedisUtil redis = RedisUtil.getRedis();
-		// redis.setdat(Key, outStr);
-		// redis.destroy();
-
-		MemcacheUtil memcache = null;
-		try {
-			memcache = MemcacheUtil.getInstance();
-			memcache.setDat(Key, outStr);
-			logger.error("insert " + Key + " >>>> \n" + outStr);
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error("memcache insert error >>> " + e.getMessage());
-		} finally {
-			try {
-				memcache.destory();
-			} catch (IOException e) {
-				e.printStackTrace();
-				logger.error("memcache close error >>> " + e.getMessage());
+		/**
+		 * 刷新全部流量分析报表
+		 * 
+		 * @param year
+		 * @throws Exception
+		 */
+		public void trafficAnalysisRefresh(int year) throws Exception {
+			int total = trafficAnalysis(year);
+			int count = 100;
+			for (int i = 0; total > i * count; i++) {
+				Thread thread = null;
+				if (year == 2016)
+					thread = new Thread(new queryHandler(method_type.trafficAnalysis16, i * count, count));
+				else if (year == 2015)
+					thread = new Thread(new queryHandler(method_type.trafficAnalysis15, i * count, count));
+				pool.execute(thread);
 			}
 		}
-	}
 
-	/**
-	 * 所有无效用户数据
-	 */
-	void AllUserInvalidAnalysis() {
-		String Key = "UserAnalysisNoExpenseRecord";
-		// UserAnalysisDao userDao = context.getBean(UserAnalysisDao.class);
-		List<UserAnalysis> resList = null;
-		String outStr = null;
-		try {
-			resList = userDao.getUserAnalysisNoExpenseRecord();
-			outStr = JSON.toJSONString(resList);
-		} catch (Exception e1) {
-			e1.printStackTrace();
-			logger.error("get Dao error >>> " + e1.getMessage());
-			return;
-		}
-		// RedisUtil redis = RedisUtil.getRedis();
-		// redis.setdat(Key, outStr);
-		// redis.destroy();
-
-		MemcacheUtil memcache = null;
-		try {
-			memcache = MemcacheUtil.getInstance();
-			memcache.setDat(Key, outStr);
-			logger.error("insert " + Key + " >>>> \n" + outStr);
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error("memcache insert error >>> " + e.getMessage());
-		} finally {
-			try {
-				memcache.destory();
-			} catch (IOException e) {
-				e.printStackTrace();
-				logger.error("memcache close error >>> " + e.getMessage());
+		/**
+		 * 刷新全部商品销量TOP
+		 * 
+		 * @throws Exception
+		 */
+		public void salesTopRefresh() throws Exception {
+			int total = salesTop();
+			int count = 100;
+			for (int i = 0; total > i * count; i++) {
+				Thread thread = new Thread(new queryHandler(method_type.salesTop, i * count, count));
+				pool.execute(thread);
 			}
 		}
+
+		/**
+		 * 刷新全部有效游湖
+		 * 
+		 * @throws Exception
+		 */
+		public void UserValidRefresh() throws Exception {
+			int total = UserValid();
+			int count = 500;
+			for (int i = 0; total > i * count; i++) {
+				Thread thread = new Thread(new queryHandler(method_type.UserValid, i * count, count));
+				pool.execute(thread);
+			}
+		}
+
+		/**
+		 * 刷新全部无效用户数据
+		 * 
+		 * @throws Exception
+		 */
+		public void UserInvalidRefresh() throws Exception {
+			int total = UserInvalid();
+			int count = 500;
+			for (int i = 0; total > i * count; i++) {
+				Thread thread = new Thread(new queryHandler(method_type.UserInvalid, i * count, count));
+				pool.execute(thread);
+			}
+		}
+
+		/**
+		 * 日常报表全部和数量
+		 * 
+		 * @throws Exception
+		 */
+		int DailySales(int year) throws Exception {
+			String key = "AllSalesData" + year;
+			List<DailySalesAnalysis> resList = null;
+			if (year == 2016) {
+				resList = dao.selectAllSalesData2016();
+			} else if (year == 2015) {
+				resList = dao.selectAllSalesData();
+			}
+			String outStr = JSON.toJSONString(resList);
+			putIntoMemcache(key, outStr);
+
+			key = key + "_num";
+			int num = resList.size();
+			putIntoMemcache(key, JSON.toJSONString(num));
+			return num;
+		}
+
+		/**
+		 * 日常报表分页
+		 * 
+		 * @param rp
+		 * @throws Exception
+		 */
+		void DailySales(DailyReportParams rp) throws Exception {
+			String key = "AllSalesData" + rp.getYear() + "_" + rp.getOffset() + "_" + rp.getLimit();
+			List<DailySalesAnalysis> res = null;
+			if (2016 == rp.getYear()) {
+				res = dao.selectAllSalesDataReport(rp);
+			} else if (2015 == rp.getYear()) {
+				res = dao.selectAllSalesDataReport2015(rp);
+			}
+			String outStr = JSON.toJSONString(res);
+			putIntoMemcache(key, outStr);
+		}
+
+		/**
+		 * 流量分析
+		 * 
+		 * @param year
+		 * @throws Exception
+		 */
+		int trafficAnalysis(int year) throws Exception {
+			String key = "TrafficAnalysis" + year;
+			List<ThisYearTrafficAnalysis> resList = null;
+			if (year == 2016) {
+				resList = thisYearTrafficAnalysisDAO.selectAllTrafficAnalysis();
+			} else if (year == 2015) {
+				trafficAnalysisDao.selectAllTrafficAnalysis();
+			}
+			String outStr = JSON.toJSONString(resList);
+			putIntoMemcache(key, outStr);
+
+			int num = resList.size();
+			putIntoMemcache(key + "_num", JSON.toJSONString(num));
+			return num;
+		}
+
+		/**
+		 * 流量分析（分页）
+		 * 
+		 * @param rp
+		 * @throws Exception
+		 */
+		void trafficAnalysis(DailyReportParams rp) throws Exception {
+			String key = "TrafficAnalysis" + rp.getYear() + "_" + rp.getOffset() + "_" + rp.getLimit();
+			List<DailySalesAnalysis> res = null;
+			if (rp.getYear() == 2016) {
+				res = thisYearTrafficAnalysisDAO.gettraffic(rp);
+			} else if (rp.getYear() == 2015) {
+				res = thisYearTrafficAnalysisDAO.gettraffic2(rp);
+			}
+			String outStr = JSON.toJSONString(res);
+			putIntoMemcache(key, outStr);
+		}
+
+		/**
+		 * 销售TOP
+		 * 
+		 * @throws Exception
+		 */
+		int salesTop() throws Exception {
+			String key = "SalesTop";
+			List<SaleTopAnalysis> resList = saleTopAnalysisdao.selectAllSaleTopData();
+			String outStr = JSON.toJSONString(resList);
+			putIntoMemcache(key, outStr);
+
+			int num = resList.size();
+			putIntoMemcache(key + "_num", JSON.toJSONString(num));
+			return num;
+		}
+
+		/**
+		 * 销售TOP（分页）
+		 * 
+		 * @param pp
+		 * @throws Exception
+		 */
+		void salesTop(PaginationParams pp) throws Exception {
+			String key = "SalesTop_" + pp.getOffset() + "_" + pp.getLimit();
+			List<SaleTopAnalysis> res = saleTopAnalysisdao.selectAllSaleTopData2(pp);
+			String outStr = JSON.toJSONString(res);
+			putIntoMemcache(key, outStr);
+		}
+
+		/**
+		 * 有效用户数量
+		 * 
+		 * @return
+		 * @throws Exception
+		 */
+		int UserValid() throws Exception {
+			String key = "UserValid_num";
+			int resDat = userDao.getNumOfUserAnalysisValid();
+			putIntoMemcache(key, String.valueOf(resDat));
+			return resDat;
+		}
+
+		/**
+		 * 有效用户（分页）
+		 * 
+		 * @param st
+		 * @param offset
+		 * @throws Exception
+		 */
+		void UserValid(int offset, int count) throws Exception {
+			String key = "UserValid_" + offset + "_" + count;
+			List<UserAnalysis> resList = userDao.getUserAnalysisWithExpenseRecordPage(offset, count);
+			String outStr = JSON.toJSONString(resList);
+			putIntoMemcache(key, outStr);
+		}
+
+		/**
+		 * 无效用户数量
+		 * 
+		 * @return
+		 * @throws Exception
+		 */
+		int UserInvalid() throws Exception {
+			String key = "UserInvalid_num";
+			int resDat = userDao.getNumOfUserAnalysisInvalid();
+			putIntoMemcache(key, String.valueOf(resDat));
+			return resDat;
+		}
+
+		/**
+		 * 无效用户（分页）
+		 * 
+		 * @param offset
+		 * @param count
+		 * @throws Exception
+		 */
+		void UserInvalid(int offset, int count) throws Exception {
+			String key = "UserInvalid_" + offset + "_" + count;
+			List<UserAnalysis> resList = userDao.getUserAnalysisNoExpenseRecordPage(offset, count);
+			String outStr = JSON.toJSONString(resList);
+			putIntoMemcache(key, outStr);
+		}
+
+		/**
+		 * 插入Memcache缓存
+		 * 
+		 * @param key
+		 * @param json
+		 */
+		void putIntoMemcache(String key, String json) {
+			MemcacheUtil memcache = null;
+			try {
+				memcache = MemcacheUtil.getInstance();
+				memcache.setDat(key, json);
+				logger.error("insert " + key + " >>>> \n" + json);
+			} catch (IOException e) {
+				e.printStackTrace();
+				logger.error("insert " + key + " error! >>>> \n" + e.getMessage());
+			} finally {
+				if (memcache != null)
+					try {
+						memcache.destory();
+					} catch (IOException e) {
+						e.printStackTrace();
+						logger.error("insert " + key + " memcache error occurred error! >>>> \n" + e.getMessage());
+					}
+			}
+		}
+
 	}
 }

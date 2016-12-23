@@ -39,6 +39,9 @@ public class LastYearTrafficAnalysisController {
 	 * @date 2016-02-01
 	 * @desc 调出所有15年的流量数据
 	 * @return JSON
+	 * 
+	 * 
+	 *         Abandoned !! Don't request it again!!
 	 */
 	@ResponseBody
 	@RequestMapping(method = RequestMethod.GET)
@@ -54,21 +57,21 @@ public class LastYearTrafficAnalysisController {
 		logger.error("selectAllTrafficData controller error >>> ");
 		return HttpUtils.generateResponse("-1", "查询失败", null);
 	}
-	
+
 	@ResponseBody
-	@RequestMapping(value = "/traffic2015",method = RequestMethod.POST)
-	public Map<String,Object> getTrafficReport2016(@RequestBody DailyReportParams rp){
+	@RequestMapping(value = "/traffic2015", method = RequestMethod.POST)
+	public Map<String, Object> getTrafficReport2016(@RequestBody DailyReportParams rp) {
 		List<DailySalesAnalysis> list = null;
 		String trafficCount = null;
 		list = trafficAnalysisService.selecttraffic(rp);
 		trafficCount = trafficAnalysisService.getCount();
-		
+
 		if (list != null) {
-			return HttpUtils.generateResponseFour("0", "请求成功", list,trafficCount);
-		}	
+			return HttpUtils.generateResponseFour("0", "请求成功", list, trafficCount);
+		}
 
 		logger.error("getAllSalesData2016 contorller error >>> ");
 		return HttpUtils.generateResponse("-1", "查询失败", null);
 	}
-	
+
 }

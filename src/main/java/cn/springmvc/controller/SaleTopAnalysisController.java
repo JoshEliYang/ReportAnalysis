@@ -38,6 +38,9 @@ public class SaleTopAnalysisController {
 	 * @date 2016-02-01
 	 * @desc 调出所有15年的销售Top数据
 	 * @return JSON
+	 * 
+	 * 
+	 *         Abandoned !! Don't request it again!!
 	 */
 	@ResponseBody
 	@RequestMapping(method = RequestMethod.GET)
@@ -53,19 +56,18 @@ public class SaleTopAnalysisController {
 		return HttpUtils.generateResponse("-1", "查询失败", null);
 	}
 
-	
 	/**
-	 * @throws Exception 
+	 * @throws Exception
 	 * @desc 调出所有15年的销售Top数据
 	 */
 	@ResponseBody
-	@RequestMapping(value = "/query",method = RequestMethod.POST)
+	@RequestMapping(value = "/query", method = RequestMethod.POST)
 	public Map<String, Object> selectAllTopData2(@RequestBody PaginationParams rp) {
 		List<SaleTopAnalysis> list = null;
 		String count = null;
 		try {
 			list = saleTopAnalysisService.selectAllSaleTopData2(rp);
-			
+
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -78,30 +80,29 @@ public class SaleTopAnalysisController {
 		logger.error("selectAllTopData contorller error >>> ");
 		return HttpUtils.generateResponse("-1", "查询失败", null);
 	}
-	
-	
+
 	/**
-	 * @throws Exception 
+	 * @throws Exception
 	 * @desc 调出所有15年的销售Top数据总数量
 	 */
 	@ResponseBody
-	@RequestMapping(value = "/queryCount",method = RequestMethod.GET)
+	@RequestMapping(value = "/queryCount", method = RequestMethod.GET)
 	public Map<String, Object> getTopCount() {
 		String count = null;
 		try {
 			count = saleTopAnalysisService.selectAllSaleTopCount();
-			
+
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
 		if (count != null) {
-			return HttpUtils.generateResponseFour("0", "请求成功", null,count);
+			return HttpUtils.generateResponseFour("0", "请求成功", null, count);
 		}
 
 		logger.error("selectAllTopData contorller error >>> ");
 		return HttpUtils.generateResponse("-1", "查询失败", null);
 	}
-	
+
 }

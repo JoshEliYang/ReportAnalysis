@@ -67,7 +67,7 @@ public class UserAnalysisServiceImpl implements UserAnalysisService {
 	 */
 	public List<UserAnalysis> getUserAnalysisWithExpenseRecord(int st, int ed) {
 		// 拼接Redis Key
-		String Key = "UserValidFrom" + st + "To" + ed;
+		String Key = "UserValid_" + st + "_" + ed;
 
 		MemcacheUtil memcache = null;
 		List<UserAnalysis> resList = null;
@@ -157,7 +157,7 @@ public class UserAnalysisServiceImpl implements UserAnalysisService {
 	 */
 	public List<UserAnalysis> getUserAnalysisNoExpenseRecord(int st, int ed) {
 		// 拼接Redis Key
-		String Key = "UserInvalidFrom" + st + "To" + ed;
+		String Key = "UserInvalid_" + st + "_" + ed;
 
 		MemcacheUtil memcache = null;
 		List<UserAnalysis> resList = null;
@@ -209,7 +209,7 @@ public class UserAnalysisServiceImpl implements UserAnalysisService {
 	// 获得有效用户数据量
 	public int getNumOfUserAnalysisValid() {
 		// 拼接Redis Key
-		String Key = "UserValidNum";
+		String Key = "UserValid_num";
 
 		MemcacheUtil memcache = null;
 		int resDat = 0;
@@ -261,7 +261,7 @@ public class UserAnalysisServiceImpl implements UserAnalysisService {
 	// 获得无效用户数量
 	public int getNumOfUserAnalysisInvalid() {
 		// 拼接Redis Key
-		String Key = "UserInvalidNum";
+		String Key = "UserInvalid_num";
 
 		// 从redis中查找
 		// RedisUtil redis = RedisUtil.getRedis();

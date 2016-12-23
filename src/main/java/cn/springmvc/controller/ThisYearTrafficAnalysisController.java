@@ -33,6 +33,10 @@ public class ThisYearTrafficAnalysisController {
 	 * @date 2016-02-01
 	 * @desc 调出所有16年的流量数据
 	 * @return JSON
+	 * 
+	 * 
+	 * 
+	 *         Abandoned !! Don't request it again!!
 	 */
 	@ResponseBody
 	@RequestMapping(method = RequestMethod.GET)
@@ -47,34 +51,34 @@ public class ThisYearTrafficAnalysisController {
 		logger.error("selectAllTrafficData contorller error >>> ");
 		return HttpUtils.generateResponse("1", "请求失败", null);
 	}
-	
+
 	@ResponseBody
-	@RequestMapping(value = "/traffic2016",method = RequestMethod.POST)
-	public Map<String,Object> getTrafficReport2016(@RequestBody DailyReportParams rp){
+	@RequestMapping(value = "/traffic2016", method = RequestMethod.POST)
+	public Map<String, Object> getTrafficReport2016(@RequestBody DailyReportParams rp) {
 		List<DailySalesAnalysis> list = null;
 		String trafficCount = null;
 		list = thisYearTrafficAnalysisService.selecttraffic(rp);
 		trafficCount = thisYearTrafficAnalysisService.getCount();
-		
+
 		if (list != null) {
-			return HttpUtils.generateResponseFour("0", "请求成功", list,trafficCount);
-		}	
+			return HttpUtils.generateResponseFour("0", "请求成功", list, trafficCount);
+		}
 
 		logger.error("getAllSalesData2016 contorller error >>> ");
 		return HttpUtils.generateResponse("-1", "查询失败", null);
 	}
-	
+
 	@ResponseBody
-	@RequestMapping(value = "/traffic2015",method = RequestMethod.POST)
-	public Map<String,Object> getTrafficReport2015(@RequestBody DailyReportParams rp){
+	@RequestMapping(value = "/traffic2015", method = RequestMethod.POST)
+	public Map<String, Object> getTrafficReport2015(@RequestBody DailyReportParams rp) {
 		List<DailySalesAnalysis> list = null;
 		String trafficCount = null;
 		list = thisYearTrafficAnalysisService.selecttraffic2(rp);
 		trafficCount = thisYearTrafficAnalysisService.getCount2();
-		
+
 		if (list != null) {
-			return HttpUtils.generateResponseFour("0", "请求成功", list,trafficCount);
-		}	
+			return HttpUtils.generateResponseFour("0", "请求成功", list, trafficCount);
+		}
 
 		logger.error("getAllSalesData2016 contorller error >>> ");
 		return HttpUtils.generateResponse("-1", "查询失败", null);
