@@ -66,7 +66,7 @@ public class ReportExcelExprotController {
 			HttpServletResponse response) {
 
 		PrintWriter writer = null;
-		List<LastYearTrafficAnalysis> reports = null;
+		List<ThisYearTrafficAnalysis> reports = null;
 		JSON json = null;
 		Map<String, Object> responseMap = null;
 		try {

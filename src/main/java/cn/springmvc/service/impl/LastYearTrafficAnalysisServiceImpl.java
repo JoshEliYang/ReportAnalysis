@@ -14,6 +14,7 @@ import cn.springmvc.ReportDAO.LastYearTrafficAnalysisDAO;
 import cn.springmvc.model.DailyReportParams;
 import cn.springmvc.model.DailySalesAnalysis;
 import cn.springmvc.model.LastYearTrafficAnalysis;
+import cn.springmvc.model.ThisYearTrafficAnalysis;
 import cn.springmvc.service.LastYearTrafficAnalysisService;
 
 /**
@@ -31,17 +32,17 @@ public class LastYearTrafficAnalysisServiceImpl implements LastYearTrafficAnalys
 	/**
 	 * Abandoned !! Don't request it again!!
 	 */
-	public List<LastYearTrafficAnalysis> selectAllTrafficAnalysisData() {
+	public List<ThisYearTrafficAnalysis> selectAllTrafficAnalysisData() {
 
 		MemcacheUtil memcache = null;
-		List<LastYearTrafficAnalysis> resList = null;
+		List<ThisYearTrafficAnalysis> resList = null;
 
 		try {
 			memcache = MemcacheUtil.getInstance();
 			String res = memcache.getDat("AllTrafficAnalysisData", String.class);
 			if (res != null) {
 				// 从redis中取数据
-				resList = JSON.parseArray(res, LastYearTrafficAnalysis.class);
+				resList = JSON.parseArray(res, ThisYearTrafficAnalysis.class);
 
 				memcache.destory();
 				return resList;

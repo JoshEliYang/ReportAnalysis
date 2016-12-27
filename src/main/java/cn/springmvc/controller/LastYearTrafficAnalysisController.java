@@ -17,6 +17,7 @@ import com.springmvc.utils.HttpUtils;
 import cn.springmvc.model.DailyReportParams;
 import cn.springmvc.model.DailySalesAnalysis;
 import cn.springmvc.model.LastYearTrafficAnalysis;
+import cn.springmvc.model.ThisYearTrafficAnalysis;
 import cn.springmvc.service.impl.LastYearTrafficAnalysisServiceImpl;
 
 /**
@@ -46,7 +47,7 @@ public class LastYearTrafficAnalysisController {
 	@ResponseBody
 	@RequestMapping(method = RequestMethod.GET)
 	public Map<String, Object> selectAllTrafficData() {
-		List<LastYearTrafficAnalysis> list = null;
+		List<ThisYearTrafficAnalysis> list = null;
 
 		list = trafficAnalysisService.selectAllTrafficAnalysisData();
 

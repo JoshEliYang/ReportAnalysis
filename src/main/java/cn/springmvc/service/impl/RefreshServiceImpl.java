@@ -19,6 +19,7 @@ import cn.springmvc.ReportDAO.ThisYearTrafficAnalysisDAO;
 import cn.springmvc.ReportDAO.UserAnalysisDao;
 import cn.springmvc.model.DailyReportParams;
 import cn.springmvc.model.DailySalesAnalysis;
+import cn.springmvc.model.LastYearTrafficAnalysis;
 import cn.springmvc.model.PaginationParams;
 import cn.springmvc.model.SaleTopAnalysis;
 import cn.springmvc.model.ThisYearTrafficAnalysis;
@@ -35,7 +36,7 @@ import cn.springmvc.service.RefreshService;
 @Service()
 public class RefreshServiceImpl implements RefreshService {
 	@Autowired
-	public LastYearTrafficAnalysisDAO trafficAnalysisDao;
+	public LastYearTrafficAnalysisDAO lastYearTrafficAnalysisDao;
 	@Autowired
 	public DailySalesDAO dao;
 	@Autowired
@@ -176,7 +177,7 @@ public class RefreshServiceImpl implements RefreshService {
 		}
 
 		/**
-		 * 刷新全部有效游湖
+		 * 刷新全部有效用户
 		 * 
 		 * @throws Exception
 		 */
@@ -231,7 +232,7 @@ public class RefreshServiceImpl implements RefreshService {
 		 * @param rp
 		 * @throws Exception
 		 */
-		void DailySales(DailyReportParams rp) throws Exception {
+		void DailySales(DailyReportParams rp) throws Exception {	
 			String key = "AllSalesData" + rp.getYear() + "_" + rp.getOffset() + "_" + rp.getLimit();
 			List<DailySalesAnalysis> res = null;
 			if (2016 == rp.getYear()) {
@@ -255,7 +256,7 @@ public class RefreshServiceImpl implements RefreshService {
 			if (year == 2016) {
 				resList = thisYearTrafficAnalysisDAO.selectAllTrafficAnalysis();
 			} else if (year == 2015) {
-				trafficAnalysisDao.selectAllTrafficAnalysis();
+				resList = lastYearTrafficAnalysisDao.selectAllTrafficAnalysis();
 			}
 			String outStr = JSON.toJSONString(resList);
 			putIntoMemcache(key, outStr);
