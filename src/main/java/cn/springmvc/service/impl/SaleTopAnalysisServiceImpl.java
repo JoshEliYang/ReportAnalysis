@@ -92,26 +92,26 @@ public class SaleTopAnalysisServiceImpl implements SaleTopAnalysisService {
 	}
 
 	public String selectAllSaleTopCount() {
-		String key = "SalesTop";
+		String key = "SalesTop_num";
 		MemcacheUtil memcache = null;
-		int num = 0;
+		String num = null;
 		try {
 			memcache = MemcacheUtil.getInstance();
-			String jsonStr = memcache.getDat(key, String.class);
+			num = memcache.getDat(key, String.class);
 
-			if (jsonStr != null) {
-				num = (Integer) JSON.parse(jsonStr);
+			if (num != null) {
 				logger.error(key + " get from cache success");
 			} else {
 				logger.error(key + " get from cache failed");
-				num = Integer.parseInt(saleTopAnalysisdao.selectAllSaleTopCount());
+				num = saleTopAnalysisdao.selectAllSaleTopCount();
 				memcache.setDat(key, JSON.toJSONString(num));
 			}
+			return num;
 		} catch (IOException e) {
 			e.printStackTrace();
 			logger.error("error occurred when get cache key >>>> " + key + " error: >>>>" + e.getMessage());
+			return null;
 		}
-		return String.valueOf(num);
 	}
 
 }
