@@ -232,7 +232,7 @@ public class RefreshServiceImpl implements RefreshService {
 		 * @param rp
 		 * @throws Exception
 		 */
-		void DailySales(DailyReportParams rp) throws Exception {	
+		void DailySales(DailyReportParams rp) throws Exception {
 			String key = "AllSalesData" + rp.getYear() + "_" + rp.getOffset() + "_" + rp.getLimit();
 			List<DailySalesAnalysis> res = null;
 			if (2016 == rp.getYear()) {
@@ -378,7 +378,7 @@ public class RefreshServiceImpl implements RefreshService {
 			try {
 				memcache = MemcacheUtil.getInstance();
 				memcache.setDat(key, json);
-				logger.error("insert " + key + " >>>> \n" + json);
+				logger.error("insert " + key + " >>>> \n");
 			} catch (IOException e) {
 				e.printStackTrace();
 				logger.error("insert " + key + " error! >>>> \n" + e.getMessage());
