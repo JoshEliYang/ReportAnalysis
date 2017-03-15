@@ -1,6 +1,7 @@
 package cn.springmvc.filter;
 
 import java.io.IOException;
+import java.net.Inet4Address;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -28,6 +29,9 @@ public class CosDomainFilter implements Filter{
 	    response.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE, PATCH");
 	    response.setHeader("Access-Control-Max-Age", "3600");
 	    response.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+	    
+	    String hostAddreess=Inet4Address.getLocalHost().getHostAddress();
+		response.setHeader("serverIP", hostAddreess);
 	    chain.doFilter(req, res);
 	}
 
