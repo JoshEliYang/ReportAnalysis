@@ -23,10 +23,9 @@
 		r_base_dict_item
 		c ON (a.pay_type = c.item_code)
 		WHERE
-		a.pay_order_create_time > #{startTime}
+		a.pay_order_create_time <![CDATA[>]]> #{startTime}
 		AND
-		a.pay_order_create_time &lt;=
-		#{endTime}
+		a.pay_order_create_time <![CDATA[<=]]> #{endTime}
 
 		<if test="typeName != null">
 			AND c.item_name = #{typeName}
@@ -53,10 +52,9 @@
 		LEFT JOIN r_base_dict_item c ON (a.pay_type
 		= c.item_code)
 		WHERE
-		a.pay_order_create_time > #{startTime}
+		a.pay_order_create_time <![CDATA[>]]> #{startTime}
 		AND
-		a.pay_order_create_time &lt;=
-		#{endTime}
+		a.pay_order_create_time <![CDATA[<=]]> #{endTime}
 
 		<if test="typeName != null">
 			AND c.item_name = #{typeName}
