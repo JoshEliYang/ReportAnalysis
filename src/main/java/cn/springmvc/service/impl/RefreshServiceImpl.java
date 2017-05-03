@@ -96,7 +96,7 @@ public class RefreshServiceImpl implements RefreshService {
 				} else if (method == method_type.UserValidRefresh) {
 					UserValidRefresh();
 				} else if (method == method_type.UserInvalidRefresh) {
-					UserInvalidRefresh();
+					//UserInvalidRefresh();
 				}
 
 				if (method == method_type.dailySales15) {
@@ -115,7 +115,7 @@ public class RefreshServiceImpl implements RefreshService {
 				if (method == method_type.UserValid) {
 					UserValid(offset, count);
 				} else if (method == method_type.UserInvalid) {
-					UserInvalid(offset, count);
+					//UserInvalid(offset, count);
 				}
 
 			} catch (Exception e) {
