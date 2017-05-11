@@ -55,11 +55,11 @@ public class RefreshServiceImpl implements RefreshService {
 
 		pool.execute(new Thread(new queryHandler(method_type.dailySalesRefresh16, 0, 0)));
 		pool.execute(new Thread(new queryHandler(method_type.dailySalesRefresh15, 0, 0)));
-		pool.execute(new Thread(new queryHandler(method_type.trafficAnalysisRefresh16, 0, 0)));
-		pool.execute(new Thread(new queryHandler(method_type.trafficAnalysisRefresh15, 0, 0)));
+//		pool.execute(new Thread(new queryHandler(method_type.trafficAnalysisRefresh16, 0, 0)));
+//		pool.execute(new Thread(new queryHandler(method_type.trafficAnalysisRefresh15, 0, 0)));
 		pool.execute(new Thread(new queryHandler(method_type.salesTopRefresh, 0, 0)));
 		pool.execute(new Thread(new queryHandler(method_type.UserValidRefresh, 0, 0)));
-		pool.execute(new Thread(new queryHandler(method_type.UserInvalidRefresh, 0, 0)));
+//		pool.execute(new Thread(new queryHandler(method_type.UserInvalidRefresh, 0, 0)));
 
 		logger.error("refresh memcache finished ...");
 	}
@@ -88,9 +88,9 @@ public class RefreshServiceImpl implements RefreshService {
 				} else if (method == method_type.dailySalesRefresh15) {
 					dailySalesRefresh(2015);
 				} else if (method == method_type.trafficAnalysisRefresh16) {
-					trafficAnalysisRefresh(2016);
+//					trafficAnalysisRefresh(2016);
 				} else if (method == method_type.trafficAnalysisRefresh15) {
-					trafficAnalysisRefresh(2015);
+//					trafficAnalysisRefresh(2015);
 				} else if (method == method_type.salesTopRefresh) {
 					salesTopRefresh();
 				} else if (method == method_type.UserValidRefresh) {
@@ -105,9 +105,9 @@ public class RefreshServiceImpl implements RefreshService {
 					DailySales(new DailyReportParams(count, offset, 2016));
 				}
 				if (method == method_type.trafficAnalysis16) {
-					trafficAnalysis(new DailyReportParams(count, offset, 2016));
+//					trafficAnalysis(new DailyReportParams(count, offset, 2016));
 				} else if (method == method_type.trafficAnalysis15) {
-					trafficAnalysis(new DailyReportParams(count, offset, 2015));
+//					trafficAnalysis(new DailyReportParams(count, offset, 2015));
 				}
 				if (method == method_type.salesTop) {
 					salesTop(new PaginationParams(count, offset));
